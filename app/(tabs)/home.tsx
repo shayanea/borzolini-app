@@ -7,7 +7,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
 
   return (
-    <SafeAreaView className="flex-1 bg-secondary-50">
+    <SafeAreaView className="flex-1 bg-[#E5E7EB]">
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 py-6"
@@ -15,7 +15,7 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-secondary-900 mb-2">
+          <Text className="text-3xl font-bold text-blue-500 mb-2">
             Hello, {user?.firstName || 'there'}!
           </Text>
           <Text className="text-secondary-600">

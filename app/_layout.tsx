@@ -15,12 +15,13 @@ const queryClient = new QueryClient({
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView className="flex-1">
       <SafeAreaProvider>
         <QueryClientProvider client={queryClient}>
           <Stack
             screenOptions={{
               headerShown: false,
+              contentStyle: { backgroundColor: '#E5E7EB' },
             }}
           >
             <Stack.Screen name="(auth)" />

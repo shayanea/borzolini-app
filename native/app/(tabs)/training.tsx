@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function TrainingScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-secondary-50">
+    <SafeAreaView className="flex-1 bg-[#E5E7EB]">
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 py-6"

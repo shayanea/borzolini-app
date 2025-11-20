@@ -1,14 +1,38 @@
+import Constants from 'expo-constants';
 import { appConfig } from '@/constants/app';
 import { TokenService } from './token-service';
-import Constants from 'expo-constants';
 
-// Types for API responses
 export interface ApiError {
   message: string;
   code?: string;
 }
 
-// Check if we're in development mode
+interface HttpErrorPayload {
+  status: number;
+  statusText: string;
+  body?: ApiError | string | null;
+}
+
+export class HttpRequestError extends Error {
+  public readonly status: number;
+
+  public readonly statusText: string;
+
+  public readonly body?: ApiError | string | null;
+
+  constructor(message: string, { status, statusText, body }: HttpErrorPayload) {
+    super(message);
+    this.name = 'HttpRequestError';
+    this.status = status;
+    this.statusText = statusText;
+    this.body = body;
+  }
+
+  public isUnauthorized(): boolean {
+    return this.status === 401;
+  }
+}
+
 const isDevelopment = (): boolean => {
   return (
     __DEV__ ||
@@ -17,17 +41,15 @@ const isDevelopment = (): boolean => {
   );
 };
 
-// Helper function to get headers with authentication
 const getHeaders = async (
   additionalHeaders: Record<string, string> = {}
 ): Promise<Record<string, string>> => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
+    Accept: 'application/json',
     ...additionalHeaders,
   };
 
-  // In development: Use token-based authentication via Authorization header
-  // In production: Rely on cookies (tokens not available in response body)
   if (isDevelopment()) {
     const authHeader = await TokenService.getAuthorizationHeader();
     if (authHeader) {
@@ -43,31 +65,88 @@ const getHeaders = async (
   return headers;
 };
 
-// Helper function to handle token refresh and retry logic
-// TODO: Implement proper refresh token logic using an AuthUtils service
+const buildHttpError = async (
+  response: Response,
+  fallback?: string
+): Promise<HttpRequestError> => {
+  const basePayload: HttpErrorPayload = {
+    status: response.status,
+    statusText: response.statusText,
+    body: null,
+  };
+
+  try {
+    const contentType = response.headers.get('content-type');
+
+    if (contentType?.includes('application/json')) {
+      const errorBody: ApiError = await response.json();
+      basePayload.body = errorBody;
+      const message =
+        errorBody.message ||
+        fallback ||
+        `Request failed with status ${response.status}`;
+      return new HttpRequestError(message, basePayload);
+    }
+
+    const text = await response.text();
+    const snippet = text.slice(0, 200);
+    basePayload.body = snippet;
+
+    const message =
+      fallback ||
+      `Unexpected ${response.status} ${response.statusText} response: ${snippet}`;
+    return new HttpRequestError(message, basePayload);
+  } catch {
+    const message =
+      fallback || `Request failed with status ${response.status}`;
+    return new HttpRequestError(message, basePayload);
+  }
+};
+
+const parseJsonResponse = async <T>(response: Response): Promise<T> => {
+  if (response.status === 204 || response.status === 205) {
+    return undefined as T;
+  }
+
+  const contentType = response.headers.get('content-type');
+  if (contentType?.includes('application/json')) {
+    return (await response.json()) as T;
+  }
+
+  const text = await response.text();
+  const snippet = text.slice(0, 200);
+  console.error(
+    `❌ Unexpected content-type (${contentType ?? 'unknown'}) for ${
+      response.url
+    }. Body preview: ${snippet}`
+  );
+  throw new Error('Unexpected response format from server');
+};
+
 const handleTokenRefresh = async <T>(
   originalRequest: () => Promise<T>
 ): Promise<T> => {
   try {
-    // First attempt
     return await originalRequest();
   } catch (error: unknown) {
-    // Check if it's a 401 error
-    const errorMessage = error instanceof Error ? error.message : String(error);
-    if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+    if (error instanceof HttpRequestError && error.isUnauthorized()) {
       console.log('🔄 Received 401, clearing tokens...');
-      // For now, just clear tokens and fail. 
-      // In a real implementation, we would attempt refresh here.
       await TokenService.clearTokens();
-      throw new Error('Authentication failed. Please login again.');
+      throw new HttpRequestError('Authentication failed. Please login again.', {
+        status: error.status,
+        statusText: error.statusText,
+        body: error.body,
+      });
     }
 
-    // Re-throw the original error if it's not a 401
-    throw error;
+    if (error instanceof Error) {
+      throw error;
+    }
+
+    throw new Error(String(error));
   }
 };
 
-// Generic HTTP client for reusability across the application
 export const httpClient = {
   post: async <T>(
     endpoint: string,
@@ -84,19 +163,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        let errorMsg = errorMessage;
-        try {
-          const error: ApiError = await response.json();
-          errorMsg = error.message || errorMessage;
-        } catch {
-          // If JSON parse fails, use default error message
-        }
-        throw new Error(
-          errorMsg || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -111,19 +181,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-         let errorMsg = errorMessage;
-        try {
-          const error: ApiError = await response.json();
-          errorMsg = error.message || errorMessage;
-        } catch {
-          // If JSON parse fails, use default error message
-        }
-        throw new Error(
-          errorMsg || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -144,19 +205,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        let errorMsg = errorMessage;
-        try {
-          const error: ApiError = await response.json();
-          errorMsg = error.message || errorMessage;
-        } catch {
-          // If JSON parse fails, use default error message
-        }
-        throw new Error(
-          errorMsg || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -177,19 +229,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        let errorMsg = errorMessage;
-        try {
-          const error: ApiError = await response.json();
-          errorMsg = error.message || errorMessage;
-        } catch {
-          // If JSON parse fails, use default error message
-        }
-        throw new Error(
-          errorMsg || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -205,12 +248,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        throw new Error(
-          errorMessage || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -234,19 +275,10 @@ export const httpClient = {
       });
 
       if (!response.ok) {
-        let errorMsg = errorMessage;
-        try {
-          const error: ApiError = await response.json();
-          errorMsg = error.message || errorMessage;
-        } catch {
-          // If JSON parse fails, use default error message
-        }
-        throw new Error(
-          errorMsg || `Request failed with status ${response.status}`
-        );
+        throw await buildHttpError(response, errorMessage);
       }
 
-      return response.json();
+      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);

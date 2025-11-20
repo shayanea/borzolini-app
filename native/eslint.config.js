@@ -12,7 +12,6 @@ export default tseslint.config([
     extends: [
       js.configs.recommended,
       tseslint.configs.recommended,
-      reactHooks.configs['recommended-latest'],
     ],
     languageOptions: {
       ecmaVersion: 2020,
@@ -38,8 +37,10 @@ export default tseslint.config([
     plugins: {
       unicorn,
       'react-native': reactNative,
+      'react-hooks': reactHooks,
     },
     rules: {
+      ...reactHooks.configs.recommended.rules,
       // Enforce kebab-case filenames
       'unicorn/filename-case': [
         'error',

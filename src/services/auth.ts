@@ -1,4 +1,4 @@
-import { httpClient } from './http-client';
+import { httpClient, HttpRequestError } from './http-client';
 import { TokenService } from './token-service';
 import { User, CreateUserDto } from '@/types/user';
 import { useQueryClient } from '@tanstack/react-query';
@@ -34,8 +34,25 @@ const authApi = {
   register: (data: RegisterData): Promise<AuthResponse> =>
     httpClient.post<AuthResponse>('/auth/register', data, 'Registration failed'),
 
-  getCurrentUser: (): Promise<User> =>
-    httpClient.get<User>('/auth/me', 'Failed to get user info'),
+  getCurrentUser: async (): Promise<User | null> => {
+    try {
+      return await httpClient.get<User>('/auth/me', 'Failed to get user info');
+    } catch (error) {
+      if (error instanceof HttpRequestError && error.isUnauthorized()) {
+        const isDev =
+          __DEV__ || process.env.NODE_ENV === 'development';
+
+        if (isDev) {
+          await TokenService.clearTokens();
+        }
+
+        console.log('ℹ️ No authenticated session detected. Returning null user.');
+        return null;
+      }
+
+      throw error;
+    }
+  },
 
   logout: (): Promise<void> => httpClient.post('/auth/logout'),
 };
@@ -110,7 +127,7 @@ export function useLogout() {
 }
 
 export function useCurrentUser() {
-  return createStandardQueryHook(
+  return createStandardQueryHook<User | null>(
     QUERY_KEYS.auth.currentUser(),
     authApi.getCurrentUser,
     {
