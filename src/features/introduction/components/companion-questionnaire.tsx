@@ -1,7 +1,7 @@
+import { PetSpecies } from '@/types/pet/pet-enums';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, Linking, ScrollView, Share, Text, TouchableOpacity, View } from 'react-native';
-import { PetSpecies } from '@/types/pet/pet-enums';
+import { ActivityIndicator, Alert, ScrollView, Share, Text, TouchableOpacity, View } from 'react-native';
 import type {
 	Activity,
 	Allergy,
@@ -181,6 +181,8 @@ export function CompanionQuestionnaire({
     ]);
   };
 
+  const [step3ResultShown, setStep3ResultShown] = useState(false);
+
   const handleAnswer = async (
     value: KidLevel | SpaceScore | Allergy | Vibe | Grooming | Activity | PetSpecies,
     label: string,
@@ -210,6 +212,20 @@ export function CompanionQuestionnaire({
     // Add answer message
     addAnswerMessage(label);
 
+    // Determine if we are after step 3 (index 2) and haven't shown early result yet
+    if (currentQuestionIndex === 2 && !step3ResultShown) {
+      // Show loading
+      setIsLoading(true);
+      addLoadingMessage();
+      await new Promise(resolve => setTimeout(resolve, 500));
+      // Calculate partial result (using whatever answers we have)
+      const partialResult = calculateBreedResult(newAnswers as QuestionnaireAnswers, selectedSpecies);
+      removeLoadingMessage();
+      addResultMessage(partialResult);
+      setIsLoading(false);
+      setStep3ResultShown(true);
+    }
+
     // Check if all questions answered (excluding species)
     const isComplete =
       selectedSpecies &&
@@ -224,32 +240,18 @@ export function CompanionQuestionnaire({
       // Show loading
       setIsLoading(true);
       addLoadingMessage();
-
-      // Wait for fake loading (0.5s)
       await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Calculate result with species filter
       const result = calculateBreedResult(newAnswers as QuestionnaireAnswers, selectedSpecies);
       removeLoadingMessage();
       addResultMessage(result);
       setIsLoading(false);
-
-      // Call callbacks
-      if (onComplete) {
-        onComplete(result);
-      }
-      if (onResultReady) {
-        onResultReady();
-      }
+      if (onComplete) onComplete(result);
+      if (onResultReady) onResultReady();
     } else {
       // Show loading before next question
       setIsLoading(true);
       addLoadingMessage();
-
-      // Wait for fake loading (0.5s)
       await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Move to next question
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       removeLoadingMessage();
@@ -408,13 +410,13 @@ export function CompanionQuestionnaire({
         }
       };
 
-      const handleFindNearby = () => {
-        const url = 'https://www.petfinder.com/cat-breeds/';
-        Linking.openURL(url).catch(err => {
-          console.error('Failed to open URL:', err);
-          Alert.alert('Error', 'Failed to open link');
-        });
-      };
+      
+
+
+
+
+
+
 
       return (
         <View key={message.id} className="mb-6">
@@ -435,16 +437,19 @@ export function CompanionQuestionnaire({
               </Text>
             </View>
             <View className="flex-row flex-wrap justify-center gap-2 mb-6">
-              {message.result.tags.map(tag => (
-                <View
-                  key={tag}
-                  className="bg-orange-100 px-4 py-2 rounded-full"
-                >
-                  <Text className="text-sm font-medium text-orange-800">
-                    #{tag}
-                  </Text>
-                </View>
-              ))}
+                {message.result.tags
+                  .slice()
+                  .sort()
+                  .map(tag => (
+                    <View
+                      key={tag}
+                      className="bg-orange-100 px-4 py-2 rounded-full"
+                    >
+                      <Text className="text-sm font-medium text-orange-800">
+                        #{tag}
+                      </Text>
+                    </View>
+                  ))}
             </View>
 
             {/* Action Buttons */}
@@ -459,21 +464,7 @@ export function CompanionQuestionnaire({
                 </Text>
               </TouchableOpacity>
 
-              <View className="bg-gray-200 border-2 border-dashed border-gray-300 rounded-2xl w-full aspect-square max-w-xs mx-auto items-center justify-center">
-                <Text className="text-sm text-gray-500 text-center px-4">
-                  QR code to shelter
-                </Text>
-              </View>
 
-              <TouchableOpacity
-                onPress={handleFindNearby}
-                className="flex-row items-center justify-center gap-2 py-3 active:opacity-70"
-              >
-                <Text className="text-orange-600 font-semibold text-base">
-                  Find {message.result.name}s near you
-                </Text>
-                <Ionicons name="open-outline" size={16} color="#f97316" />
-              </TouchableOpacity>
             </View>
           </View>
         </View>
