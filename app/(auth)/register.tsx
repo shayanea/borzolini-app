@@ -1,162 +1,130 @@
-import { Link, router } from 'expo-router';
-import { useState } from 'react';
 import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  Alert,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAuth } from '@/hooks/use-auth';
+import { Link } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import { AuthField } from '@/features/auth/components/auth-field';
+import { useRegisterForm } from '@/features/auth/hooks/use-register';
 
 export default function RegisterScreen() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const { registerAsync, isRegistering } = useAuth();
-
-  const handleRegister = async () => {
-    if (!firstName || !lastName || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      Alert.alert('Error', 'Passwords do not match');
-      return;
-    }
-
-    try {
-      await registerAsync({
-        email,
-        password,
-        firstName,
-        lastName,
-      });
-      router.replace('/introduction');
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Registration failed';
-      Alert.alert('Registration Error', message);
-    }
-  };
+  const {
+    values,
+    updateField,
+    handleRegister,
+    isRegistering,
+    showPassword,
+    togglePasswordVisibility,
+  } = useRegisterForm();
 
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        className="flex-1"
-      >
-        <ScrollView
-          contentContainerClassName="flex-grow"
-          keyboardShouldPersistTaps="handled"
+    <View className="flex-1 bg-slate-100">
+      <SafeAreaView className="flex-1 justify-center px-4">
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          className="flex-1 justify-center"
         >
-          <View className="flex-1 px-6 py-12">
-            <View className="mb-8">
-              <Text className="text-3xl font-bold text-secondary-900 mb-2">
-                Create Account
+          <ScrollView
+            contentContainerClassName="flex-grow justify-center"
+            keyboardShouldPersistTaps="handled"
+          >
+            <View className="bg-white rounded-3xl p-8 shadow-xl mx-2">
+              <Text className="text-3xl font-bold text-center text-blue-500 mb-2 leading-tight">
+                Sign Up
               </Text>
-              <Text className="text-secondary-600">
-                Sign up to start managing your pet's health
+              <Text className="text-center text-secondary-500 text-base mb-8">
+                Sign up to access your healthcare services and manage
+                appointments
               </Text>
-            </View>
 
-            <View className="mb-4">
-              <Text className="text-sm font-medium text-secondary-700 mb-2">
-                First Name
-              </Text>
-              <TextInput
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg text-secondary-900 bg-white"
+              <AuthField
+                label="First Name"
                 placeholder="Enter your first name"
-                value={firstName}
-                onChangeText={setFirstName}
+                value={values.firstName}
+                onChangeText={text => updateField('firstName', text)}
                 autoCapitalize="words"
               />
-            </View>
 
-            <View className="mb-4">
-              <Text className="text-sm font-medium text-secondary-700 mb-2">
-                Last Name
-              </Text>
-              <TextInput
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg text-secondary-900 bg-white"
+              <AuthField
+                label="Last Name"
                 placeholder="Enter your last name"
-                value={lastName}
-                onChangeText={setLastName}
+                value={values.lastName}
+                onChangeText={text => updateField('lastName', text)}
                 autoCapitalize="words"
               />
-            </View>
 
-            <View className="mb-4">
-              <Text className="text-sm font-medium text-secondary-700 mb-2">
-                Email
-              </Text>
-              <TextInput
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg text-secondary-900 bg-white"
-                placeholder="Enter your email"
-                value={email}
-                onChangeText={setEmail}
+              <AuthField
+                label="Phone"
+                placeholder="Enter your phone number"
+                value={values.phone}
+                onChangeText={text => updateField('phone', text)}
+                keyboardType="phone-pad"
+              />
+
+              <AuthField
+                label="E-Mail"
+                placeholder="Enter email address"
+                value={values.email}
+                onChangeText={text => updateField('email', text)}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
               />
-            </View>
 
-            <View className="mb-4">
-              <Text className="text-sm font-medium text-secondary-700 mb-2">
-                Password
-              </Text>
-              <TextInput
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg text-secondary-900 bg-white"
-                placeholder="Create a password"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
+              <AuthField
+                label="Password"
+                placeholder="Enter password"
+                value={values.password}
+                onChangeText={text => updateField('password', text)}
+                secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                renderRight={() => (
+                  <TouchableOpacity
+                    onPress={togglePasswordVisibility}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      showPassword ? 'Hide password' : 'Show password'
+                    }
+                  >
+                    <Ionicons
+                      name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                      size={22}
+                      color="#64748b"
+                    />
+                  </TouchableOpacity>
+                )}
               />
-            </View>
 
-            <View className="mb-6">
-              <Text className="text-sm font-medium text-secondary-700 mb-2">
-                Confirm Password
-              </Text>
-              <TextInput
-                className="w-full px-4 py-3 border border-secondary-300 rounded-lg text-secondary-900 bg-white"
-                placeholder="Confirm your password"
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                secureTextEntry
-                autoCapitalize="none"
-              />
-            </View>
+              <TouchableOpacity
+                className="w-full bg-orange-500 py-4 rounded-full mb-6 shadow-lg shadow-orange-500/30 active:bg-orange-600"
+                onPress={handleRegister}
+                disabled={isRegistering}
+              >
+                <Text className="text-white text-center font-bold text-base uppercase tracking-wide">
+                  {isRegistering ? 'Creating account...' : 'Sign Up'}
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              className="w-full bg-primary-500 py-4 rounded-lg mb-4"
-              onPress={handleRegister}
-              disabled={isRegistering}
-            >
-              <Text className="text-white text-center font-semibold text-base">
-                {isRegistering ? 'Creating account...' : 'Create Account'}
-              </Text>
-            </TouchableOpacity>
-
-            <View className="mt-4 flex-row justify-center items-center">
-              <Text className="text-secondary-600">Already have an account? </Text>
-              <Link href="/(auth)/login" asChild>
-                <TouchableOpacity>
-                  <Text className="text-primary-600 font-semibold">Sign In</Text>
-                </TouchableOpacity>
-              </Link>
+              <View className="flex-row justify-center items-center">
+                <Text className="text-secondary-600 text-sm font-medium">
+                  Already have an account?{' '}
+                </Text>
+                <Link href="/(auth)/login" asChild>
+                  <TouchableOpacity>
+                    <Text className="text-blue-500 font-bold text-sm">Log In</Text>
+                  </TouchableOpacity>
+                </Link>
+              </View>
             </View>
-          </View>
-        </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 }
 

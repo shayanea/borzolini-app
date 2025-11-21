@@ -94,7 +94,7 @@ export default function LoginScreen() {
               </Link>
 
               <TouchableOpacity
-                className="w-full bg-primary-500 py-4 rounded-xl mb-8 shadow-lg shadow-primary-500/30 active:bg-primary-600"
+                className="w-full bg-primary-500 py-4 rounded-full mb-8 shadow-lg shadow-primary-500/30 active:bg-primary-600"
                 onPress={handleLogin}
                 disabled={isLoggingIn}
               >

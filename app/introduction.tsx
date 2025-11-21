@@ -1,101 +1,209 @@
-import { router } from 'expo-router';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useUpdateProfile } from '@/services/user';
+import { IntroductionData, UserType } from '@/features/introduction/types';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { useMemo, useState } from 'react';
 
-type UserType = 'pet-owner' | 'pet-adopter' | 'companion-seeker' | null;
+import { Ionicons } from '@expo/vector-icons';
+import { PetSpecies } from '@/types/pet/pet-enums';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StepFour } from '@/features/introduction/components/step-four';
+import { StepOne } from '@/features/introduction/components/step-one';
+import { StepThree } from '@/features/introduction/components/step-three';
+import { StepTwo } from '@/features/introduction/components/step-two';
+import { CompanionQuestionnaire } from '@/features/introduction/components/companion-questionnaire';
+import type { BreedResult } from '@/features/introduction/types/questionnaire';
+import { router } from 'expo-router';
 
 export default function IntroductionScreen() {
-  const { mutateAsync: updateProfile, isPending } = useUpdateProfile();
+  const [currentStep, setCurrentStep] = useState(0);
+  const [questionnaireCompleted, setQuestionnaireCompleted] = useState(false);
+  const [formData, setFormData] = useState<IntroductionData>({
+    userType: null,
+    selectedBreeds: [],
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    countryCode: '+1',
+    dateOfBirth: '',
+    gender: '',
+  });
 
-  const handleUserTypeSelect = async (userType: UserType) => {
-    try {
-      // Update profile with selected user type (storing in notes for now as an example)
-      // In a real app, this would map to specific profile fields
-      await updateProfile({ 
-        notes: `User Type: ${userType}`
-      });
-      
-      router.replace('/(tabs)/home');
-    } catch (error) {
-      console.error('Failed to update profile:', error);
-      Alert.alert('Error', 'Failed to save selection. Please try again.');
+  // Dynamic total steps logic based on PWA
+  const totalSteps = useMemo(() => {
+    if (
+      formData.userType === 'companion-seeker' ||
+      formData.userType === 'pet-owner'
+    ) {
+      return 2;
+    }
+    return 4;
+  }, [formData.userType]);
+
+  const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
+
+  const handleUserTypeSelect = (userType: UserType) => {
+    setFormData(prev => ({ ...prev, userType }));
+  };
+
+  const handleSpeciesSelect = (species: PetSpecies) => {
+    setFormData(prev => ({
+      ...prev,
+      selectedSpecies: species,
+      selectedBreeds: [],
+    }));
+  };
+
+  const handleBreedToggle = (breed: string) => {
+    setFormData(prev => {
+      const breeds = prev.selectedBreeds.includes(breed)
+        ? prev.selectedBreeds.filter(b => b !== breed)
+        : [...prev.selectedBreeds, breed];
+      return { ...prev, selectedBreeds: breeds };
+    });
+  };
+
+  const handleUpdateFormData = (updates: Partial<IntroductionData>) => {
+    setFormData(prev => ({ ...prev, ...updates }));
+  };
+
+  const handleNext = () => {
+    if (currentStep < totalSteps - 1) {
+      setCurrentStep(prev => prev + 1);
+    } else {
+      // Completion logic matching PWA
+      if (formData.userType === 'pet-owner') {
+        router.replace('/(tabs)/home');
+      } else if (formData.userType === 'pet-adopter') {
+        router.replace('/(auth)/register');
+      } else {
+        router.replace('/(tabs)/home');
+      }
     }
   };
 
-  const handleSkip = () => {
-    router.replace('/(tabs)/home');
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(prev => prev - 1);
+      // Reset questionnaire completion when going back
+      if (formData.userType === 'companion-seeker') {
+        setQuestionnaireCompleted(false);
+      }
+    } else {
+      router.back();
+    }
   };
 
+  const canProceed = useMemo(() => {
+    if (currentStep === 0) return !!formData.userType;
+    if (formData.userType === 'companion-seeker') {
+      if (currentStep === 1) return questionnaireCompleted;
+    }
+    if (formData.userType === 'pet-adopter') {
+      if (currentStep === 1) return !!formData.selectedSpecies;
+      if (currentStep === 2) return formData.selectedBreeds.length > 0;
+      if (currentStep === 3)
+        return !!formData.firstName && !!formData.lastName && !!formData.email;
+    }
+    return true;
+  }, [currentStep, formData, questionnaireCompleted]);
+
   return (
-    <SafeAreaView className="flex-1 bg-white">
-      <ScrollView
-        contentContainerClassName="flex-grow px-6 py-12"
-        showsVerticalScrollIndicator={false}
-      >
-        <View className="flex-1 justify-center">
-          <Text className="text-3xl font-bold text-secondary-900 mb-4 text-center">
-            Welcome to Pet Clinic
-          </Text>
-          <Text className="text-secondary-600 text-center mb-8">
-            Tell us about yourself to get started
-          </Text>
-
-          <View className="mb-6">
-            <TouchableOpacity
-              className={`w-full bg-primary-50 border-2 border-primary-500 rounded-xl p-6 mb-4 ${isPending ? 'opacity-50' : ''}`}
-              onPress={() => handleUserTypeSelect('pet-owner')}
-              disabled={isPending}
-            >
-              <Text className="text-xl font-semibold text-secondary-900 mb-2">
-                Pet Owner
-              </Text>
-              <Text className="text-secondary-600">
-                I have pets and want to manage their health
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className={`w-full bg-secondary-50 border-2 border-secondary-300 rounded-xl p-6 mb-4 ${isPending ? 'opacity-50' : ''}`}
-              onPress={() => handleUserTypeSelect('pet-adopter')}
-              disabled={isPending}
-            >
-              <Text className="text-xl font-semibold text-secondary-900 mb-2">
-                Pet Adopter
-              </Text>
-              <Text className="text-secondary-600">
-                I'm looking to adopt a pet
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              className={`w-full bg-secondary-50 border-2 border-secondary-300 rounded-xl p-6 ${isPending ? 'opacity-50' : ''}`}
-              onPress={() => handleUserTypeSelect('companion-seeker')}
-              disabled={isPending}
-            >
-              <Text className="text-xl font-semibold text-secondary-900 mb-2">
-                Companion Seeker
-              </Text>
-              <Text className="text-secondary-600">
-                I want to learn more about pet care
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity onPress={handleSkip} disabled={isPending}>
-            <Text className="text-primary-600 text-center text-sm">
-              Skip for now
-            </Text>
+    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
+      {/* Header */}
+      <View className="px-6 pt-2 pb-6">
+        <View className="flex-row items-center justify-between mb-6">
+          <TouchableOpacity
+            onPress={handleBack}
+            className="p-2 -ml-2 active:opacity-70"
+          >
+            <Ionicons name="arrow-back" size={24} color="#374151" />
           </TouchableOpacity>
+          <Text className="text-sm font-medium text-gray-900">
+            {currentStep + 1}/{totalSteps}
+          </Text>
         </View>
-      </ScrollView>
+
+        {/* Progress Bar */}
+        <View className="w-full bg-gray-200 rounded-full h-1">
+          <View
+            className="bg-orange-500 h-1 rounded-full"
+            style={{ width: `${progressPercentage}%` }}
+          />
+        </View>
+      </View>
+
+      {/* Content */}
+      {formData.userType === 'companion-seeker' && currentStep === 1 ? (
+        <CompanionQuestionnaire
+          onComplete={(result: BreedResult) => {
+            // Handle completion - could navigate or show result
+            console.log('Questionnaire completed:', result);
+          }}
+          onResultReady={() => {
+            setQuestionnaireCompleted(true);
+          }}
+        />
+      ) : (
+        <ScrollView
+          contentContainerClassName="flex-grow px-6 pb-32"
+          showsVerticalScrollIndicator={false}
+        >
+          {currentStep === 0 && (
+            <StepOne
+              selectedUserType={formData.userType}
+              onUserTypeSelect={handleUserTypeSelect}
+            />
+          )}
+
+          {formData.userType === 'pet-adopter' && currentStep === 1 && (
+            <StepTwo
+              selectedSpecies={formData.selectedSpecies}
+              onSpeciesSelect={handleSpeciesSelect}
+            />
+          )}
+
+          {formData.userType === 'pet-adopter' && currentStep === 2 && (
+            <StepThree
+              selectedSpecies={formData.selectedSpecies}
+              selectedBreeds={formData.selectedBreeds}
+              onBreedToggle={handleBreedToggle}
+            />
+          )}
+
+          {formData.userType === 'pet-adopter' && currentStep === 3 && (
+            <StepFour data={formData} onUpdate={handleUpdateFormData} />
+          )}
+
+          {/* Placeholder for other user types or steps */}
+          {formData.userType === 'pet-owner' && currentStep > 0 && (
+            <View className="flex-1 justify-center items-center space-y-4">
+              <Text className="text-xl font-bold text-gray-900">
+                Step {currentStep + 1}
+              </Text>
+              <Text className="text-gray-500 text-center">
+                Content for {formData.userType} flow coming soon.
+              </Text>
+            </View>
+          )}
+        </ScrollView>
+      )}
+
+      {/* Footer */}
+      <View className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-100">
+        <TouchableOpacity
+          onPress={handleNext}
+          disabled={!canProceed}
+          className={`w-full py-4 rounded-full items-center shadow-lg ${
+            canProceed
+              ? 'bg-orange-500 shadow-orange-500/30 active:bg-orange-600'
+              : 'bg-gray-300 shadow-gray-300/30'
+          }`}
+        >
+          <Text className="text-white font-bold text-base uppercase tracking-wide">
+            {currentStep === totalSteps - 1 ? 'Finish' : 'Continue'}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
-

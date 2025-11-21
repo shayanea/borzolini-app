@@ -1,8 +1,10 @@
 import '../global.css';
-import { Stack } from 'expo-router';
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { Stack } from 'expo-router';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -23,6 +25,7 @@ export default function RootLayout() {
               headerShown: false,
               contentStyle: { backgroundColor: '#E5E7EB' },
             }}
+            initialRouteName="introduction"
           >
             <Stack.Screen name="(auth)" />
             <Stack.Screen name="(tabs)" />
@@ -33,4 +36,3 @@ export default function RootLayout() {
     </GestureHandlerRootView>
   );
 }
-
