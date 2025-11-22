@@ -7,3 +7,5 @@ export * from './pet-interfaces';
 // Export DTOs
 export * from './pet-dtos';
 
+// Export breed types
+export * from './breed';

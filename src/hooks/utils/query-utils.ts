@@ -1,8 +1,8 @@
 import {
+  QueryKey,
   useMutation,
   useQuery,
   useQueryClient,
-  QueryKey,
 } from '@tanstack/react-query';
 
 // Query Key Factory
@@ -17,6 +17,9 @@ export const QUERY_KEYS = {
     all: ['pets'] as const,
     list: () => [...QUERY_KEYS.pets.all, 'list'] as const,
     detail: (id: string) => [...QUERY_KEYS.pets.all, 'detail', id] as const,
+  },
+  breeds: {
+    all: () => ['breeds'] as const,
   },
   user: {
     all: ['user'] as const,
@@ -95,7 +98,7 @@ export function createStandardMutationHook<TData, TVariables>(
         }
         onSuccess?.(data, variables);
       },
-      onError: (error) => {
+      onError: error => {
         console.error(`${context} error:`, error);
         onError?.(error);
         // In a real app, we would show a toast notification here
@@ -164,4 +167,3 @@ export function createStandardQueryHook<TData>(
     };
   };
 }
-

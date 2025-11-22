@@ -1,18 +1,28 @@
-import { PetSpecies } from '@/types/pet/pet-enums';
-import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Alert, ScrollView, Share, Text, TouchableOpacity, View } from 'react-native';
 import type {
-	Activity,
-	Allergy,
-	BreedResult,
-	Grooming,
-	KidLevel,
-	QuestionnaireAnswers,
-	SpaceScore,
-	Vibe,
+  Activity,
+  Allergy,
+  BreedResult,
+  Grooming,
+  KidLevel,
+  QuestionnaireAnswers,
+  SpaceScore,
+  Vibe,
 } from '../types/questionnaire';
+import {
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Share,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+
+import { Ionicons } from '@expo/vector-icons';
+import { PetSpecies } from '@/types/pet/pet-enums';
 import { calculateBreedResult } from '../utils/calculate-breed';
+import { useBreeds } from '@/services/breeds';
 
 interface ChatMessage {
   id: string;
@@ -26,8 +36,18 @@ interface ChatMessage {
 interface QuestionData {
   title: string;
   description: string;
-  type: 'species' | 'kid' | 'space' | 'allergy' | 'vibe' | 'grooming' | 'activity';
-  options?: Array<{ label: string; value: KidLevel | Allergy | Vibe | Grooming | Activity | PetSpecies }>;
+  type:
+    | 'species'
+    | 'kid'
+    | 'space'
+    | 'allergy'
+    | 'vibe'
+    | 'grooming'
+    | 'activity';
+  options?: Array<{
+    label: string;
+    value: KidLevel | Allergy | Vibe | Grooming | Activity | PetSpecies;
+  }>;
   spaceOptions?: SpaceScore[];
 }
 
@@ -39,7 +59,7 @@ interface CompanionQuestionnaireProps {
 const QUESTIONS: QuestionData[] = [
   {
     title: 'What type of pet?',
-    description: 'Choose the type of companion you\'re looking for.',
+    description: "Choose the type of companion you're looking for.",
     type: 'species',
     options: [
       { label: '🐱 Cat', value: PetSpecies.CAT },
@@ -111,6 +131,7 @@ export function CompanionQuestionnaire({
   onResultReady,
 }: CompanionQuestionnaireProps) {
   const initialQuestion = QUESTIONS[0];
+  const { data: breedsData, isLoading: breedsLoading } = useBreeds();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 'question-0',
@@ -121,7 +142,9 @@ export function CompanionQuestionnaire({
   ]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Partial<QuestionnaireAnswers>>({});
-  const [selectedSpecies, setSelectedSpecies] = useState<PetSpecies | undefined>(undefined);
+  const [selectedSpecies, setSelectedSpecies] = useState<
+    PetSpecies | undefined
+  >(undefined);
   const [isLoading, setIsLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -184,8 +207,15 @@ export function CompanionQuestionnaire({
   const [step3ResultShown, setStep3ResultShown] = useState(false);
 
   const handleAnswer = async (
-    value: KidLevel | SpaceScore | Allergy | Vibe | Grooming | Activity | PetSpecies,
-    label: string,
+    value:
+      | KidLevel
+      | SpaceScore
+      | Allergy
+      | Vibe
+      | Grooming
+      | Activity
+      | PetSpecies,
+    label: string
   ) => {
     // Update answers
     const question = QUESTIONS[currentQuestionIndex];
@@ -213,17 +243,28 @@ export function CompanionQuestionnaire({
     addAnswerMessage(label);
 
     // Determine if we are after step 3 (index 2) and haven't shown early result yet
-    if (currentQuestionIndex === 2 && !step3ResultShown) {
+    const isValidStep3 =
+      currentQuestionIndex === 2 && !step3ResultShown && breedsData;
+    if (isValidStep3) {
       // Show loading
       setIsLoading(true);
       addLoadingMessage();
       await new Promise(resolve => setTimeout(resolve, 500));
       // Calculate partial result (using whatever answers we have)
-      const partialResult = calculateBreedResult(newAnswers as QuestionnaireAnswers, selectedSpecies);
-      removeLoadingMessage();
-      addResultMessage(partialResult);
-      setIsLoading(false);
-      setStep3ResultShown(true);
+      const partialResult = calculateBreedResult(
+        newAnswers as QuestionnaireAnswers,
+        breedsData,
+        selectedSpecies
+      );
+      if (partialResult) {
+        removeLoadingMessage();
+        addResultMessage(partialResult);
+        setIsLoading(false);
+        setStep3ResultShown(true);
+      } else {
+        removeLoadingMessage();
+        setIsLoading(false);
+      }
     }
 
     // Check if all questions answered (excluding species)
@@ -236,17 +277,29 @@ export function CompanionQuestionnaire({
       newAnswers.grooming &&
       newAnswers.activity;
 
-    if (isComplete) {
+    if (isComplete && breedsData) {
       // Show loading
       setIsLoading(true);
       addLoadingMessage();
       await new Promise(resolve => setTimeout(resolve, 500));
-      const result = calculateBreedResult(newAnswers as QuestionnaireAnswers, selectedSpecies);
+      const result = calculateBreedResult(
+        newAnswers as QuestionnaireAnswers,
+        breedsData,
+        selectedSpecies
+      );
       removeLoadingMessage();
-      addResultMessage(result);
-      setIsLoading(false);
-      if (onComplete) onComplete(result);
-      if (onResultReady) onResultReady();
+      if (result) {
+        addResultMessage(result);
+        setIsLoading(false);
+        if (onComplete) onComplete(result);
+        if (onResultReady) onResultReady();
+      } else {
+        setIsLoading(false);
+        Alert.alert(
+          'No Match Found',
+          "We couldn't find a perfect match based on your answers. Please try adjusting your preferences."
+        );
+      }
     } else {
       // Show loading before next question
       setIsLoading(true);
@@ -260,7 +313,16 @@ export function CompanionQuestionnaire({
     }
   };
 
-  const isQuestionAnswered = (questionType: 'species' | 'kid' | 'space' | 'allergy' | 'vibe' | 'grooming' | 'activity'): boolean => {
+  const isQuestionAnswered = (
+    questionType:
+      | 'species'
+      | 'kid'
+      | 'space'
+      | 'allergy'
+      | 'vibe'
+      | 'grooming'
+      | 'activity'
+  ): boolean => {
     if (questionType === 'species') return !!selectedSpecies;
     if (questionType === 'kid') return !!answers.kidLevel;
     if (questionType === 'space') return !!answers.spaceScore;
@@ -333,7 +395,8 @@ export function CompanionQuestionnaire({
                 >
                   <Text
                     className={`text-base font-medium ${
-                      isDisabled && getAnswerValue(message.question!.type) !== option.value
+                      isDisabled &&
+                      getAnswerValue(message.question!.type) !== option.value
                         ? 'text-gray-400'
                         : 'text-gray-900'
                     }`}
@@ -410,14 +473,6 @@ export function CompanionQuestionnaire({
         }
       };
 
-      
-
-
-
-
-
-
-
       return (
         <View key={message.id} className="mb-6">
           <View className="bg-gray-100 rounded-3xl rounded-tl-sm p-6 mb-4">
@@ -437,19 +492,19 @@ export function CompanionQuestionnaire({
               </Text>
             </View>
             <View className="flex-row flex-wrap justify-center gap-2 mb-6">
-                {message.result.tags
-                  .slice()
-                  .sort()
-                  .map(tag => (
-                    <View
-                      key={tag}
-                      className="bg-orange-100 px-4 py-2 rounded-full"
-                    >
-                      <Text className="text-sm font-medium text-orange-800">
-                        #{tag}
-                      </Text>
-                    </View>
-                  ))}
+              {message.result.tags
+                .slice()
+                .sort()
+                .map(tag => (
+                  <View
+                    key={tag}
+                    className="bg-orange-100 px-4 py-2 rounded-full"
+                  >
+                    <Text className="text-sm font-medium text-orange-800">
+                      #{tag}
+                    </Text>
+                  </View>
+                ))}
             </View>
 
             {/* Action Buttons */}
@@ -463,8 +518,6 @@ export function CompanionQuestionnaire({
                   Copy Share Text
                 </Text>
               </TouchableOpacity>
-
-
             </View>
           </View>
         </View>
@@ -475,8 +528,23 @@ export function CompanionQuestionnaire({
   };
 
   const getAnswerValue = (
-    type: 'species' | 'kid' | 'space' | 'allergy' | 'vibe' | 'grooming' | 'activity',
-  ): KidLevel | SpaceScore | Allergy | Vibe | Grooming | Activity | PetSpecies | undefined => {
+    type:
+      | 'species'
+      | 'kid'
+      | 'space'
+      | 'allergy'
+      | 'vibe'
+      | 'grooming'
+      | 'activity'
+  ):
+    | KidLevel
+    | SpaceScore
+    | Allergy
+    | Vibe
+    | Grooming
+    | Activity
+    | PetSpecies
+    | undefined => {
     if (type === 'species') return selectedSpecies;
     if (type === 'kid') return answers.kidLevel;
     if (type === 'space') return answers.spaceScore;
@@ -486,6 +554,30 @@ export function CompanionQuestionnaire({
     if (type === 'activity') return answers.activity;
     return undefined;
   };
+
+  // Show loading state while breeds are being fetched
+  if (breedsLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#f97316" />
+        <Text className="text-gray-600 mt-4">Loading breeds data...</Text>
+      </View>
+    );
+  }
+
+  // Show error if breeds failed to load
+  if (!breedsData) {
+    return (
+      <View className="flex-1 justify-center items-center px-6">
+        <Text className="text-red-600 text-center text-lg font-semibold mb-2">
+          Failed to load breeds
+        </Text>
+        <Text className="text-gray-600 text-center">
+          Please check your connection and try again.
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -498,4 +590,3 @@ export function CompanionQuestionnaire({
     </ScrollView>
   );
 }
-
