@@ -8,11 +8,12 @@ import type {
   SpaceScore,
   Vibe,
 } from '../types/questionnaire';
+import { useRouter } from 'expo-router';
 import {
   ActivityIndicator,
   Alert,
   ScrollView,
-  Share,
+
   Text,
   TouchableOpacity,
   View,
@@ -130,6 +131,7 @@ export function CompanionQuestionnaire({
   onComplete,
   onResultReady,
 }: CompanionQuestionnaireProps) {
+  const router = useRouter();
   const initialQuestion = QUESTIONS[0];
   const { data: breedsData, isLoading: breedsLoading } = useBreeds();
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -461,17 +463,7 @@ export function CompanionQuestionnaire({
     }
 
     if (message.type === 'result' && message.result) {
-      const handleShare = async () => {
-        const shareText = `I'm a ${message.result!.name} Recruit! 🐱 ${message.result!.fitScore}% match – ${message.result!.why}`;
-        try {
-          await Share.share({
-            message: shareText,
-          });
-        } catch (error) {
-          console.error('Failed to share:', error);
-          Alert.alert('Error', 'Failed to share');
-        }
-      };
+
 
       return (
         <View key={message.id} className="mb-6">
@@ -510,12 +502,12 @@ export function CompanionQuestionnaire({
             {/* Action Buttons */}
             <View className="gap-4">
               <TouchableOpacity
-                onPress={handleShare}
+                onPress={() => router.push('/map')}
                 className="flex-row items-center justify-center gap-2 bg-orange-500 py-4 rounded-2xl active:bg-orange-600"
               >
-                <Ionicons name="copy-outline" size={20} color="#ffffff" />
+                <Ionicons name="map-outline" size={20} color="#ffffff" />
                 <Text className="text-white font-semibold text-base">
-                  Copy Share Text
+                  Find near clinics
                 </Text>
               </TouchableOpacity>
             </View>
