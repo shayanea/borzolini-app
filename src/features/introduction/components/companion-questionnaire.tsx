@@ -281,7 +281,7 @@ export function CompanionQuestionnaire({
       // Show loading
       setIsLoading(true);
       addLoadingMessage();
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       const result = calculateBreedResult(
         newAnswers as QuestionnaireAnswers,
         breedsData,
@@ -304,7 +304,7 @@ export function CompanionQuestionnaire({
       // Show loading before next question
       setIsLoading(true);
       addLoadingMessage();
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise(resolve => setTimeout(resolve, 1500));
       const nextIndex = currentQuestionIndex + 1;
       setCurrentQuestionIndex(nextIndex);
       removeLoadingMessage();

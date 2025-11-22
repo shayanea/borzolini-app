@@ -1,11 +1,16 @@
-import { PetSpecies } from '@/types/pet/pet-enums';
-import type { Breed, GroomingNeeds, ExerciseNeeds, BreedsResponse } from '@/types/pet/breed';
 import type {
+  Breed,
+  BreedsResponse,
+  ExerciseNeeds,
+  GroomingNeeds,
+} from '@/types/pet/breed';
+import { PetSpecies } from '@/types/pet/pet-enums';
+import type {
+  Activity,
   BreedResult,
+  Grooming,
   QuestionnaireAnswers,
   Vibe,
-  Grooming,
-  Activity,
 } from '../types/questionnaire';
 
 // Map API grooming needs to questionnaire grooming
@@ -38,7 +43,7 @@ const mapExerciseNeeds = (apiExercise: ExerciseNeeds): Activity[] => {
 
 // Map size category to space score ranges
 const mapSizeToSpaceScore = (
-  sizeCategory: string,
+  sizeCategory: string
 ): Array<1 | 2 | 3 | 4 | 5> => {
   switch (sizeCategory) {
     case 'tiny':
@@ -126,10 +131,11 @@ const isHypoallergenic = (breed: Breed): boolean => {
   ];
 
   return (
-    hypoallergenicKeywords.some(keyword =>
-      lowerName.includes(keyword) ||
-      lowerDescription.includes(keyword) ||
-      lowerTemperament.includes(keyword),
+    hypoallergenicKeywords.some(
+      keyword =>
+        lowerName.includes(keyword) ||
+        lowerDescription.includes(keyword) ||
+        lowerTemperament.includes(keyword)
     ) || breed.grooming_needs === 'low' // Low grooming often means low shedding
   );
 };
@@ -137,7 +143,7 @@ const isHypoallergenic = (breed: Breed): boolean => {
 // Calculate compatibility score between answers and breed
 function calculateBreedScore(
   answers: QuestionnaireAnswers,
-  breed: Breed,
+  breed: Breed
 ): number {
   let score = 0;
 
@@ -153,7 +159,7 @@ function calculateBreedScore(
   } else {
     // Partial credit for close matches
     const distance = Math.min(
-      ...breedSpaceScores.map(pref => Math.abs(pref - answers.spaceScore)),
+      ...breedSpaceScores.map(pref => Math.abs(pref - answers.spaceScore))
     );
     if (distance === 1) {
       score += 15;
@@ -225,7 +231,7 @@ function calculateBreedScore(
 // Generate why description from breed data
 const generateWhyDescription = (
   breed: Breed,
-  answers: QuestionnaireAnswers,
+  answers: QuestionnaireAnswers
 ): string => {
   const parts: string[] = [];
 
@@ -239,9 +245,15 @@ const generateWhyDescription = (
   }
 
   // Add size-based description
-  if (answers.spaceScore <= 2 && (breed.size_category === 'tiny' || breed.size_category === 'small')) {
+  if (
+    answers.spaceScore <= 2 &&
+    (breed.size_category === 'tiny' || breed.size_category === 'small')
+  ) {
     parts.push('perfect for small spaces');
-  } else if (answers.spaceScore >= 4 && (breed.size_category === 'large' || breed.size_category === 'giant')) {
+  } else if (
+    answers.spaceScore >= 4 &&
+    (breed.size_category === 'large' || breed.size_category === 'giant')
+  ) {
     parts.push('thrives in spacious environments');
   }
 
@@ -329,7 +341,7 @@ const generateTags = (breed: Breed): string[] => {
 export function calculateBreedResult(
   answers: QuestionnaireAnswers,
   breedsData: BreedsResponse,
-  species?: PetSpecies,
+  species?: PetSpecies
 ): BreedResult | null {
   if (!breedsData) {
     return null;
@@ -370,7 +382,7 @@ export function calculateBreedResult(
   const maxPossibleScore = 160; // Sum of all possible points
   const fitScore = Math.min(
     100,
-    Math.max(60, Math.round((topMatch.score / maxPossibleScore) * 100)),
+    Math.max(60, Math.round((topMatch.score / maxPossibleScore) * 100))
   );
 
   return {
