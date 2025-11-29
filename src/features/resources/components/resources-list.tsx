@@ -1,9 +1,15 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { ResourceCard } from './resource-card';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { resourcesService } from '../services/resources.service';
 import { Resource, ResourceType } from '../types';
+import { ResourceCard } from './resource-card';
 
 export function ResourcesList() {
   const [resources, setResources] = useState<Resource[]>([]);
@@ -41,8 +47,11 @@ export function ResourcesList() {
   const discord = groupResources(ResourceType.DISCORD);
   const audio = groupResources(ResourceType.AUDIO);
   // Any other types or fallback
-  const others = resources.filter(r => 
-    ![ResourceType.VIDEO, ResourceType.DISCORD, ResourceType.AUDIO].includes(r.type)
+  const others = resources.filter(
+    r =>
+      ![ResourceType.VIDEO, ResourceType.DISCORD, ResourceType.AUDIO].includes(
+        r.type
+      )
   );
 
   if (loading) {
@@ -58,7 +67,11 @@ export function ResourcesList() {
       className="flex-1"
       contentContainerClassName="px-6 py-6"
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fb8500']} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          colors={['#fb8500']}
+        />
       }
     >
       <View className="mb-6">

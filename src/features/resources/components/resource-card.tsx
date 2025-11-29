@@ -7,7 +7,9 @@ interface ResourceCardProps {
   resource: Resource;
 }
 
-type MaterialCommunityIconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
+type MaterialCommunityIconName = ComponentProps<
+  typeof MaterialCommunityIcons
+>['name'];
 
 export function ResourceCard({ resource }: ResourceCardProps) {
   const handlePress = () => {
@@ -37,13 +39,9 @@ export function ResourceCard({ resource }: ResourceCardProps) {
       className="flex-row items-center p-4 bg-white rounded-xl mb-3 shadow-sm"
     >
       <View className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center">
-        <MaterialCommunityIcons
-          name={icon.name}
-          size={24}
-          color={icon.color}
-        />
+        <MaterialCommunityIcons name={icon.name} size={24} color={icon.color} />
       </View>
-      
+
       <View className="ml-4 flex-1">
         <Text className="text-secondary-900 font-medium text-base mb-1">
           {resource.title}
@@ -55,11 +53,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
         )}
       </View>
 
-      <MaterialCommunityIcons
-        name="open-in-new"
-        size={20}
-        color="#94a3b8"
-      />
+      <MaterialCommunityIcons name="open-in-new" size={20} color="#94a3b8" />
     </TouchableOpacity>
   );
 }

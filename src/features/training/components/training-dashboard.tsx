@@ -1,17 +1,26 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { ActivityCard } from './activity-card';
-import { ActivityDetail } from './activity-detail';
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { trainingService } from '../services/training.service';
 import { DailyTrainingAssignment, TrainingActivity } from '../types';
+import { ActivityCard } from './activity-card';
+import { ActivityDetail } from './activity-detail';
 
 export function TrainingDashboard() {
   const [assignments, setAssignments] = useState<DailyTrainingAssignment[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedActivity, setSelectedActivity] = useState<TrainingActivity | null>(null);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<string | null>(null);
+  const [selectedActivity, setSelectedActivity] =
+    useState<TrainingActivity | null>(null);
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState<
+    string | null
+  >(null);
   const [completing, setCompleting] = useState(false);
 
   const fetchAssignments = useCallback(async () => {
@@ -77,7 +86,11 @@ export function TrainingDashboard() {
         className="flex-1"
         contentContainerClassName="px-6 py-6"
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#fb8500']} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={['#fb8500']}
+          />
         }
       >
         <View className="mb-6">
@@ -85,9 +98,9 @@ export function TrainingDashboard() {
             Today's Training
           </Text>
           <Text className="text-secondary-600">
-            {pendingAssignments.length > 0 
-              ? `You have ${pendingAssignments.length} activities pending` 
-              : "All done for today! Great job!"}
+            {pendingAssignments.length > 0
+              ? `You have ${pendingAssignments.length} activities pending`
+              : 'All done for today! Great job!'}
           </Text>
         </View>
 
@@ -96,7 +109,7 @@ export function TrainingDashboard() {
             <Text className="text-lg font-semibold text-secondary-900 mb-4">
               To Do
             </Text>
-            {pendingAssignments.map((assignment) => (
+            {pendingAssignments.map(assignment => (
               <ActivityCard
                 key={assignment.id}
                 activity={assignment.activity}
@@ -111,7 +124,7 @@ export function TrainingDashboard() {
             <Text className="text-lg font-semibold text-secondary-900 mb-4">
               Completed
             </Text>
-            {completedAssignments.map((assignment) => (
+            {completedAssignments.map(assignment => (
               <ActivityCard
                 key={assignment.id}
                 activity={assignment.activity}
