@@ -4,13 +4,15 @@
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "type-check": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,css,md}\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "fix-network": "bash scripts/fix-emulator-network.sh",
+    "test-api-connection": "adb shell 'curl -s -o /dev/null -w \"%{http_code}\" https://borzolini-service.onrender.com/api/docs' || echo 'Cannot connect. Check emulator network settings.'"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

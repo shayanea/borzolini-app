@@ -2,6 +2,8 @@ import { IntroductionData, UserType } from '@/features/introduction/types';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useMemo, useState } from 'react';
 
+import type { BreedResult } from '@/features/introduction/types/questionnaire';
+import { CompanionQuestionnaire } from '@/features/introduction/components/companion-questionnaire';
 import { Ionicons } from '@expo/vector-icons';
 import { PetSpecies } from '@/types/pet/pet-enums';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -9,8 +11,6 @@ import { StepFour } from '@/features/introduction/components/step-four';
 import { StepOne } from '@/features/introduction/components/step-one';
 import { StepThree } from '@/features/introduction/components/step-three';
 import { StepTwo } from '@/features/introduction/components/step-two';
-import { CompanionQuestionnaire } from '@/features/introduction/components/companion-questionnaire';
-import type { BreedResult } from '@/features/introduction/types/questionnaire';
 import { router } from 'expo-router';
 
 export default function IntroductionScreen() {
@@ -30,10 +30,10 @@ export default function IntroductionScreen() {
 
   // Dynamic total steps logic based on PWA
   const totalSteps = useMemo(() => {
-    if (
-      formData.userType === 'companion-seeker' ||
-      formData.userType === 'pet-owner'
-    ) {
+    if (formData.userType === 'pet-owner') {
+      return 1;
+    }
+    if (formData.userType === 'companion-seeker') {
       return 2;
     }
     return 4;
@@ -67,13 +67,17 @@ export default function IntroductionScreen() {
   };
 
   const handleNext = () => {
+    // Redirect pet-owner to auth screen immediately after step 0
+    if (formData.userType === 'pet-owner' && currentStep === 0) {
+      router.replace('/(auth)/login');
+      return;
+    }
+
     if (currentStep < totalSteps - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
       // Completion logic matching PWA
-      if (formData.userType === 'pet-owner') {
-        router.replace('/(tabs)/home');
-      } else if (formData.userType === 'pet-adopter') {
+      if (formData.userType === 'pet-adopter') {
         router.replace('/(auth)/register');
       } else {
         router.replace('/(tabs)/home');
@@ -172,18 +176,6 @@ export default function IntroductionScreen() {
 
           {formData.userType === 'pet-adopter' && currentStep === 3 && (
             <StepFour data={formData} onUpdate={handleUpdateFormData} />
-          )}
-
-          {/* Placeholder for other user types or steps */}
-          {formData.userType === 'pet-owner' && currentStep > 0 && (
-            <View className="flex-1 justify-center items-center space-y-4">
-              <Text className="text-xl font-bold text-gray-900">
-                Step {currentStep + 1}
-              </Text>
-              <Text className="text-gray-500 text-center">
-                Content for {formData.userType} flow coming soon.
-              </Text>
-            </View>
           )}
         </ScrollView>
       )}

@@ -33,19 +33,27 @@ const resolveApiUrl = (): string => {
     Constants.expoConfig?.extra?.apiUrl ||
     null;
 
-  if (envOverride) {
-    return normalizeUrl(envOverride);
-  }
+  let resolvedUrl: string;
 
-  if (__DEV__) {
+  if (envOverride) {
+    resolvedUrl = normalizeUrl(envOverride);
+  } else if (__DEV__) {
     const localNetworkUrl = buildLocalNetworkUrl();
 
     if (localNetworkUrl) {
-      return normalizeUrl(localNetworkUrl);
+      resolvedUrl = normalizeUrl(localNetworkUrl);
+    } else {
+      resolvedUrl = 'http://localhost:3000';
     }
+  } else {
+    resolvedUrl = 'http://localhost:3000';
   }
 
-  return 'http://localhost:3000';
+  if (__DEV__) {
+    console.log(`🌐 [API Config] Resolved API URL: ${resolvedUrl}`);
+  }
+
+  return resolvedUrl;
 };
 
 export const appConfig = {

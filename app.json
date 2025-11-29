@@ -15,26 +15,43 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.clinic.native"
+      "bundleIdentifier": "com.clinic.app",
+      "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": true,
+          "NSExceptionDomains": {
+            "192.168.70.174": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            },
+            "localhost": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.clinic.native",
+      "package": "com.clinic.app",
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "usesCleartextTraffic": true
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "react-native-maps"
     ],
     "extra": {
-      "apiUrl": "http://192.168.70.174:3001",
+      "apiUrl": "https://borzolini-service.onrender.com/api",
       "env": "development"
     }
   }

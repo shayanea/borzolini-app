@@ -1,5 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ResourcesList } from '../../src/features/resources/components/ResourcesList';
+import { ResourcesList } from '../../src/features/resources/components/resources-list';
 
 export default function ResourcesScreen() {
   return (

@@ -154,19 +154,31 @@ export const httpClient = {
     errorMessage?: string
   ): Promise<T> => {
     const makeRequest = async (): Promise<T> => {
-      const headers = await getHeaders();
-      const response = await fetch(`${appConfig.apiUrl}${endpoint}`, {
-        method: 'POST',
-        headers,
-        body: data ? JSON.stringify(data) : undefined,
-        credentials: 'include',
-      });
+      const url = `${appConfig.apiUrl}${endpoint}`;
+      
+      try {
+        const headers = await getHeaders();
+        const response = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: data ? JSON.stringify(data) : undefined,
+          credentials: 'include',
+        });
 
-      if (!response.ok) {
-        throw await buildHttpError(response, errorMessage);
+        if (!response.ok) {
+          throw await buildHttpError(response, errorMessage);
+        }
+
+        return parseJsonResponse<T>(response);
+      } catch (error) {
+        if (error instanceof TypeError && error.message.includes('Network request failed')) {
+          console.error(`❌ [Network Error] Failed to connect to: ${url}`);
+          console.error(`   Make sure the server is running and accessible from this device`);
+          console.error(`   Check if you're on the same network and firewall settings`);
+          throw new Error(`Network request failed. Unable to reach ${url}. Please check your connection.`);
+        }
+        throw error;
       }
-
-      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);
@@ -174,17 +186,29 @@ export const httpClient = {
 
   get: async <T>(endpoint: string, errorMessage?: string): Promise<T> => {
     const makeRequest = async (): Promise<T> => {
-      const headers = await getHeaders();
-      const response = await fetch(`${appConfig.apiUrl}${endpoint}`, {
-        headers,
-        credentials: 'include',
-      });
+      const url = `${appConfig.apiUrl}${endpoint}`;
+      
+      try {
+        const headers = await getHeaders();
+        const response = await fetch(url, {
+          headers,
+          credentials: 'include',
+        });
 
-      if (!response.ok) {
-        throw await buildHttpError(response, errorMessage);
+        if (!response.ok) {
+          throw await buildHttpError(response, errorMessage);
+        }
+
+        return parseJsonResponse<T>(response);
+      } catch (error) {
+        if (error instanceof TypeError && error.message.includes('Network request failed')) {
+          console.error(`❌ [Network Error] Failed to connect to: ${url}`);
+          console.error(`   Make sure the server is running and accessible from this device`);
+          console.error(`   Check if you're on the same network and firewall settings`);
+          throw new Error(`Network request failed. Unable to reach ${url}. Please check your connection.`);
+        }
+        throw error;
       }
-
-      return parseJsonResponse<T>(response);
     };
 
     return handleTokenRefresh(makeRequest);

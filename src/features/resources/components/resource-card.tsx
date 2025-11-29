@@ -1,11 +1,13 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import React, { type ComponentProps } from 'react';
 import { Linking, Text, TouchableOpacity, View } from 'react-native';
 import { Resource, ResourceType } from '../types';
 
 interface ResourceCardProps {
   resource: Resource;
 }
+
+type MaterialCommunityIconName = ComponentProps<typeof MaterialCommunityIcons>['name'];
 
 export function ResourceCard({ resource }: ResourceCardProps) {
   const handlePress = () => {
@@ -14,7 +16,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
     );
   };
 
-  const getIcon = () => {
+  const getIcon = (): { name: MaterialCommunityIconName; color: string } => {
     switch (resource.type) {
       case ResourceType.VIDEO:
         return { name: 'youtube', color: '#fb0000' };
@@ -36,7 +38,7 @@ export function ResourceCard({ resource }: ResourceCardProps) {
     >
       <View className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center">
         <MaterialCommunityIcons
-          name={icon.name as any}
+          name={icon.name}
           size={24}
           color={icon.color}
         />

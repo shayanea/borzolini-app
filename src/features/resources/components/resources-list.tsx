@@ -1,7 +1,7 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { ResourceCard } from './ResourceCard';
+import { ResourceCard } from './resource-card';
 import { resourcesService } from '../services/resources.service';
 import { Resource, ResourceType } from '../types';
 

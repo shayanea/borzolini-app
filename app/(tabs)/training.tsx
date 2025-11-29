@@ -1,5 +1,5 @@
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { TrainingDashboard } from '../../src/features/training/components/TrainingDashboard';
+import { TrainingDashboard } from '../../src/features/training/components/training-dashboard';
 
 export default function TrainingScreen() {
   return (

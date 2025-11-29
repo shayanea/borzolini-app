@@ -1,8 +1,8 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import { ActivityIndicator, RefreshControl, ScrollView, Text, View } from 'react-native';
-import { ActivityCard } from './ActivityCard';
-import { ActivityDetail } from './ActivityDetail';
+import { ActivityCard } from './activity-card';
+import { ActivityDetail } from './activity-detail';
 import { trainingService } from '../services/training.service';
 import { DailyTrainingAssignment, TrainingActivity } from '../types';
 
