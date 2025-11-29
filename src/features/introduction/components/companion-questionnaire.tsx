@@ -12,11 +12,13 @@ import { ResultMessage } from './chat-messages/result-message';
 interface CompanionQuestionnaireProps {
   onComplete?: (result: BreedResult) => void;
   onResultReady?: () => void;
+  questionSet?: 'lifestyle' | 'practical' | 'personality';
 }
 
 export function CompanionQuestionnaire({
   onComplete,
   onResultReady,
+  questionSet,
 }: CompanionQuestionnaireProps) {
   const {
     messages,
@@ -27,7 +29,7 @@ export function CompanionQuestionnaire({
     handleAnswer,
     isQuestionAnswered,
     getAnswerValue,
-  } = useCompanionQuestionnaire({ onComplete, onResultReady });
+  } = useCompanionQuestionnaire({ onComplete, onResultReady, questionSet });
 
   const renderMessage = (message: ChatMessage) => {
     if (message.type === 'question' && message.question) {

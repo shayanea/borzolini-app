@@ -41,86 +41,23 @@ export interface ChatMessage {
   result?: BreedResult;
 }
 
-const QUESTIONS: QuestionData[] = [
-  {
-    title: 'What type of pet?',
-    description: "Choose the type of companion you're looking for.",
-    type: 'species',
-    options: [
-      { label: '🐱 Cat', value: PetSpecies.CAT },
-      { label: '🐕 Dog', value: PetSpecies.DOG },
-    ],
-  },
-  {
-    title: 'Household Situation?',
-    description: 'Tell us about your household to find the perfect match.',
-    type: 'kid',
-    options: [
-      { label: 'Adults only (including seniors)', value: 'none' },
-      { label: 'Wild toddlers (under 6)', value: 'toddlers' },
-      { label: 'Energetic school-kids (6-12)', value: 'school' },
-      { label: 'Teens or calm crew', value: 'teens' },
-    ],
-  },
-  {
-    title: 'Space Squeeze (1-5)',
-    description:
-      'How much space do you have? Rate from 1 (tiny studio) to 5 (roomy with balcony).',
-    type: 'space',
-    spaceOptions: [1, 2, 3, 4, 5],
-  },
-  {
-    title: 'Allergy Alert?',
-    description: 'Help us find a breed that fits your allergy needs.',
-    type: 'allergy',
-    options: [
-      { label: 'High allergies', value: 'high' },
-      { label: 'Mild / none', value: 'none' },
-      { label: 'Other pets in mix', value: 'otherPets' },
-    ],
-  },
-  {
-    title: 'Interaction Style?',
-    description: 'What kind of interaction are you looking for with your pet?',
-    type: 'vibe',
-    options: [
-      { label: 'High-touch hugs', value: 'cuddly' },
-      { label: 'Play bursts', value: 'playful' },
-      { label: 'Watch from afar', value: 'independent' },
-    ],
-  },
-  {
-    title: 'Grooming Commitment?',
-    description: 'How much time can you dedicate to brushing and care?',
-    type: 'grooming',
-    options: [
-      { label: 'Low (Wash & Wear)', value: 'low' },
-      { label: 'Medium (Weekly brush)', value: 'medium' },
-      { label: 'High (Daily spa day)', value: 'high' },
-    ],
-  },
-  {
-    title: 'Activity Level?',
-    description: 'What activity level can you provide for your pet?',
-    type: 'activity',
-    options: [
-      { label: 'Couch Potato', value: 'low' },
-      { label: 'Weekend Warrior', value: 'medium' },
-      { label: 'Daily Athlete', value: 'high' },
-    ],
-  },
-];
+import { QUESTION_SETS } from '../constants/question-sets';
+
+const DEFAULT_QUESTIONS = QUESTION_SETS.lifestyle;
 
 interface UseCompanionQuestionnaireProps {
   onComplete?: (result: BreedResult) => void;
   onResultReady?: () => void;
+  questionSet?: 'lifestyle' | 'practical' | 'personality';
 }
 
 export function useCompanionQuestionnaire({
   onComplete,
   onResultReady,
+  questionSet = 'lifestyle',
 }: UseCompanionQuestionnaireProps) {
-  const initialQuestion = QUESTIONS[0];
+  const questions = QUESTION_SETS[questionSet] || DEFAULT_QUESTIONS;
+  const initialQuestion = questions[0];
   const { data: breedsData, isLoading: breedsLoading } = useBreeds();
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
@@ -140,7 +77,7 @@ export function useCompanionQuestionnaire({
   const [step3ResultShown, setStep3ResultShown] = useState(false);
 
   const addQuestionMessage = (index: number) => {
-    const question = QUESTIONS[index];
+    const question = questions[index];
     setMessages(prev => [
       ...prev,
       {
@@ -207,7 +144,7 @@ export function useCompanionQuestionnaire({
     label: string
   ) => {
     // Update answers
-    const question = QUESTIONS[currentQuestionIndex];
+    const question = questions[currentQuestionIndex];
     const newAnswers = { ...answers };
 
     if (question.type === 'species') {
