@@ -1,12 +1,13 @@
-import type { BreedResult } from '../types/questionnaire';
 import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 import {
   ChatMessage,
   useCompanionQuestionnaire,
 } from '../hooks/use-companion-questionnaire';
-import { QuestionMessage } from './chat-messages/question-message';
+
 import { AnswerMessage } from './chat-messages/answer-message';
+import type { BreedResult } from '../types/questionnaire';
 import { LoadingMessage } from './chat-messages/loading-message';
+import { QuestionMessage } from './chat-messages/question-message';
 import { ResultMessage } from './chat-messages/result-message';
 
 interface CompanionQuestionnaireProps {
@@ -54,7 +55,13 @@ export function CompanionQuestionnaire({
     }
 
     if (message.type === 'result' && message.result) {
-      return <ResultMessage key={message.id} result={message.result} />;
+      return (
+        <ResultMessage
+          key={message.id}
+          result={message.result}
+          isIntermediate={message.isIntermediate}
+        />
+      );
     }
 
     return null;

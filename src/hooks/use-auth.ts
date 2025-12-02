@@ -1,12 +1,12 @@
-import { useMemo, useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
-import { TokenService } from '@/services/token-service';
 import {
   useCurrentUser,
   useLogin,
   useLogout,
   useRegister,
 } from '@/services/auth';
+import { TokenService } from '@/services/token-service';
+import { useQueryClient } from '@tanstack/react-query';
+import { useEffect, useMemo, useState } from 'react';
 import { QUERY_KEYS } from './utils';
 
 /**
@@ -21,7 +21,7 @@ export function useTokenAuth() {
   useEffect(() => {
     const checkTokens = async () => {
       const isDev = __DEV__ || process.env.NODE_ENV === 'development';
-      
+
       if (isDev) {
         // In dev: Check if we have valid stored tokens
         const valid = await TokenService.isAccessTokenValid();
@@ -32,14 +32,16 @@ export function useTokenAuth() {
         setHasTokens(true);
       }
     };
-    checkTokens();
+    checkTokens().catch(() => {
+      setHasTokens(false);
+    });
   }, []);
 
   return {
     isAuthenticated: hasTokens,
     checkTokens: async () => {
       const isDev = __DEV__ || process.env.NODE_ENV === 'development';
-      
+
       if (isDev) {
         const valid = await TokenService.isAccessTokenValid();
         setHasTokens(valid);
@@ -53,7 +55,7 @@ export function useTokenAuth() {
     },
     clearTokens: async () => {
       const isDev = __DEV__ || process.env.NODE_ENV === 'development';
-      
+
       if (isDev) {
         await TokenService.clearTokens();
       }
@@ -128,4 +130,3 @@ export function useAuth() {
     logoutMutation,
   };
 }
-

@@ -1,11 +1,11 @@
 import { httpClient } from '../../../services/http-client';
 import {
-  CompleteTrainingDto,
-  CreateTrainingAssignmentDto,
-  DailyTrainingAssignment,
-  DailyTrainingStats,
-  PetSpecies,
-  TrainingActivity,
+    CompleteTrainingDto,
+    CreateTrainingAssignmentDto,
+    DailyTrainingAssignment,
+    DailyTrainingStats,
+    PetSpecies,
+    TrainingActivity,
 } from '../types';
 
 class TrainingService {
@@ -13,7 +13,7 @@ class TrainingService {
    * Get today's training assignments for the current user
    */
   async getTodayAssignments(): Promise<DailyTrainingAssignment[]> {
-    const response = await httpClient.get<DailyTrainingAssignment[]>('/training/daily');
+    const response = await httpClient.get<DailyTrainingAssignment[]>('/v1/training/daily');
     return response;
   }
 
@@ -21,7 +21,7 @@ class TrainingService {
    * Create a manual training assignment
    */
   async createAssignment(dto: CreateTrainingAssignmentDto): Promise<DailyTrainingAssignment> {
-    const response = await httpClient.post<DailyTrainingAssignment>('/training/daily', dto);
+    const response = await httpClient.post<DailyTrainingAssignment>('/v1/training/daily', dto);
     return response;
   }
 
@@ -33,7 +33,7 @@ class TrainingService {
     dto: CompleteTrainingDto
   ): Promise<DailyTrainingAssignment> {
     const response = await httpClient.patch<DailyTrainingAssignment>(
-      `/training/daily/${assignmentId}/complete`,
+      `/v1/training/daily/${assignmentId}/complete`,
       dto
     );
     return response;
@@ -43,7 +43,7 @@ class TrainingService {
    * Get training history
    */
   async getTrainingHistory(limit = 50): Promise<DailyTrainingAssignment[]> {
-    const response = await httpClient.get<DailyTrainingAssignment[]>(`/training/history?limit=${limit}`);
+    const response = await httpClient.get<DailyTrainingAssignment[]>(`/v1/training/history?limit=${limit}`);
     return response;
   }
 
@@ -51,7 +51,7 @@ class TrainingService {
    * Get training statistics
    */
   async getTrainingStats(): Promise<DailyTrainingStats> {
-    const response = await httpClient.get<DailyTrainingStats>('/training/stats');
+    const response = await httpClient.get<DailyTrainingStats>('/v1/training/stats');
     return response;
   }
 
@@ -70,7 +70,7 @@ class TrainingService {
     if (difficulty) params.difficulty = difficulty;
 
     const queryString = new URLSearchParams(params).toString();
-    const response = await httpClient.get<TrainingActivity[]>(`/training/search?${queryString}`);
+    const response = await httpClient.get<TrainingActivity[]>(`/v1/training/search?${queryString}`);
     return response;
   }
 }

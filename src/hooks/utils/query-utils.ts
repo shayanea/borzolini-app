@@ -1,8 +1,8 @@
 import {
-  QueryKey,
-  useMutation,
-  useQuery,
-  useQueryClient,
+	QueryKey,
+	useMutation,
+	useQuery,
+	useQueryClient,
 } from '@tanstack/react-query';
 
 // Query Key Factory
@@ -19,7 +19,14 @@ export const QUERY_KEYS = {
     detail: (id: string) => [...QUERY_KEYS.pets.all, 'detail', id] as const,
   },
   breeds: {
-    all: () => ['breeds'] as const,
+    all: ['breeds'] as const,
+    list: () => [...QUERY_KEYS.breeds.all, 'list'] as const,
+		detail: (id: string) => [...QUERY_KEYS.breeds.all, 'detail', id] as const,
+  },
+  adoptionLocations: {
+    all: ['adoption-locations'] as const,
+    list: () => [...QUERY_KEYS.adoptionLocations.all, 'list'] as const,
+    detail: (id: string) => [...QUERY_KEYS.adoptionLocations.all, 'detail', id] as const,
   },
   user: {
     all: ['user'] as const,
@@ -101,8 +108,6 @@ export function createStandardMutationHook<TData, TVariables>(
       onError: error => {
         console.error(`${context} error:`, error);
         onError?.(error);
-        // In a real app, we would show a toast notification here
-        // Toast.show({ type: 'error', text1: errorMessage, text2: error.message });
       },
     });
 

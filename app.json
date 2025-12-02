@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "scheme": "native",
     "splash": {
       "image": "./assets/splash-icon.png",
@@ -17,6 +17,7 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.clinic.app",
       "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need your location to show nearby adoption centers and shelters.",
         "NSAppTransportSecurity": {
           "NSAllowsArbitraryLoads": true,
           "NSExceptionDomains": {
@@ -40,7 +41,11 @@
       "package": "com.clinic.app",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -48,7 +53,13 @@
     },
     "plugins": [
       "expo-router",
-      "react-native-maps"
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "We need your location to show nearby adoption centers and shelters."
+        }
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "apiUrl": "https://borzolini-service.onrender.com/api",
@@ -56,4 +67,3 @@
     }
   }
 }
-

@@ -1,18 +1,18 @@
-import { httpClient } from './http-client';
-import { User, UpdateUserDto } from '@/types/user';
 import { createStandardMutationHook, createStandardQueryHook, QUERY_KEYS } from '@/hooks/utils';
+import { UpdateUserDto, User } from '@/types/user';
 import { useQueryClient } from '@tanstack/react-query';
+import { httpClient } from './http-client';
 
 // API functions
 const userApi = {
   getProfile: (): Promise<User> =>
-    httpClient.get<User>('/auth/me', 'Failed to get profile'),
+    httpClient.get<User>('/v1/auth/me', 'Failed to get profile'),
 
   updateProfile: (data: UpdateUserDto): Promise<User> =>
-    httpClient.put<User>('/users/profile/me', data, 'Failed to update profile'),
+    httpClient.put<User>('/v1/users/profile/me', data, 'Failed to update profile'),
     
   updateAvatar: (formData: FormData): Promise<{ avatarUrl: string }> =>
-    httpClient.postFormData('/users/avatar', formData, 'Failed to upload avatar'),
+    httpClient.postFormData('/v1/users/avatar', formData, 'Failed to upload avatar'),
 };
 
 // Hooks

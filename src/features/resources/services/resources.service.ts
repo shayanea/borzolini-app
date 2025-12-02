@@ -6,7 +6,7 @@ class ResourcesService {
    * Get all active resources
    */
   async getActiveResources(): Promise<Resource[]> {
-    const response = await httpClient.get<Resource[]>('/resources/active');
+    const response = await httpClient.get<Resource[]>('/v1/resources');
     return response;
   }
 
@@ -14,7 +14,7 @@ class ResourcesService {
    * Get resources by type
    */
   async getResourcesByType(type: ResourceType): Promise<Resource[]> {
-    const response = await httpClient.get<Resource[]>(`/resources/type/${type}?activeOnly=true`);
+    const response = await httpClient.get<Resource[]>(`/v1/resources/type/${type}?activeOnly=true`);
     return response;
   }
 }

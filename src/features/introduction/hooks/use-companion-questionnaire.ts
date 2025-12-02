@@ -39,6 +39,7 @@ export interface ChatMessage {
   question?: QuestionData;
   answer?: string;
   result?: BreedResult;
+  isIntermediate?: boolean;
 }
 
 import { QUESTION_SETS } from '../constants/question-sets';
@@ -121,13 +122,14 @@ export function useCompanionQuestionnaire({
     setMessages(prev => prev.filter(msg => msg.type !== 'loading'));
   };
 
-  const addResultMessage = (result: BreedResult) => {
+  const addResultMessage = (result: BreedResult, isIntermediate = false) => {
     setMessages(prev => [
       ...prev,
       {
         id: `result-${Date.now()}`,
         type: 'result',
         result,
+        isIntermediate,
       },
     ]);
   };
@@ -184,7 +186,7 @@ export function useCompanionQuestionnaire({
       );
       if (partialResult) {
         removeLoadingMessage();
-        addResultMessage(partialResult);
+        addResultMessage(partialResult, true);
         setIsLoading(false);
         setStep3ResultShown(true);
       } else {

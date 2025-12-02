@@ -1,5 +1,5 @@
-import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Text, TouchableOpacity, View } from 'react-native';
 import { UserType } from '../types';
 
 interface StepOneProps {
@@ -20,8 +20,9 @@ export function StepOne({ selectedUserType, onUserTypeSelect }: StepOneProps) {
         Tell us about yourself
       </Text>
       <Text className="text-base text-gray-600 leading-6 mb-8">
-        Are you a Pet Owner ready to find loving homes? Or a Pet Adopter looking
-        for your new best friend?
+        Are you a Pet Owner ready to find loving homes? A Pet Adopter looking for
+        your new best friend? Or simply looking to discover the perfect companion
+        for your lifestyle?
       </Text>
 
       <View className="gap-4">

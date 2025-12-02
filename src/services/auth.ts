@@ -1,20 +1,20 @@
 import {
-  AuthResponse,
-  ForgotPasswordData,
-  LoginData,
-  RegisterData,
+	QUERY_CONFIG,
+	QUERY_KEYS,
+	createStandardMutationHook,
+	createStandardQueryHook,
+} from '@/hooks/utils';
+import {
+	AuthResponse,
+	ForgotPasswordData,
+	LoginData,
+	RegisterData,
 } from '@/types/auth';
 import { HttpRequestError, httpClient } from './http-client';
-import {
-  QUERY_CONFIG,
-  QUERY_KEYS,
-  createStandardMutationHook,
-  createStandardQueryHook,
-} from '@/hooks/utils';
 
-import { TokenService } from './token-service';
 import { User } from '@/types/user';
 import { useQueryClient } from '@tanstack/react-query';
+import { TokenService } from './token-service';
 
 const isDevEnvironment = () => {
   if (__DEV__) {
@@ -26,21 +26,30 @@ const isDevEnvironment = () => {
 // API functions
 const authApi = {
   login: (data: LoginData): Promise<AuthResponse> =>
-    httpClient.post<AuthResponse>('/auth/login', data, 'Login failed'),
+    httpClient.post<AuthResponse>('/v1/auth/login', data, 'Login failed'),
 
   register: (data: RegisterData): Promise<AuthResponse> =>
     httpClient.post<AuthResponse>(
-      '/auth/register',
+      '/v1/auth/register',
       data,
       'Registration failed'
     ),
 
   forgotPassword: (data: ForgotPasswordData): Promise<void> =>
-    httpClient.post('/auth/forgot-password', data, 'Password reset failed'),
+    httpClient.post('/v1/auth/forgot-password', data, 'Password reset failed'),
 
   getCurrentUser: async (): Promise<User | null> => {
+    // In development, we use token-based auth. If no tokens exist, don't make the API call.
+    // In production, we use cookies, so we must make the call to check auth status.
+    if (isDevEnvironment()) {
+      const hasTokens = await TokenService.hasTokens();
+      if (!hasTokens) {
+        return null;
+      }
+    }
+
     try {
-      return await httpClient.get<User>('/auth/me', 'Failed to get user info');
+      return await httpClient.get<User>('/v1/auth/me', 'Failed to get user info');
     } catch (error) {
       if (error instanceof HttpRequestError) {
         if (error.isUnauthorized()) {
@@ -61,7 +70,7 @@ const authApi = {
     }
   },
 
-  logout: (): Promise<void> => httpClient.post('/auth/logout'),
+  logout: (): Promise<void> => httpClient.post('/v1/auth/logout'),
 };
 
 // Helper function to handle auth success

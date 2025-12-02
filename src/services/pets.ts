@@ -1,24 +1,24 @@
-import { httpClient } from './http-client';
-import { Pet, CreatePetDto, UpdatePetDto } from '@/types/pet';
 import { createStandardMutationHook, createStandardQueryHook, QUERY_KEYS } from '@/hooks/utils';
+import { CreatePetDto, Pet, UpdatePetDto } from '@/types/pet';
 import { useQueryClient } from '@tanstack/react-query';
+import { httpClient } from './http-client';
 
 // API functions
 const petsApi = {
   getUserPets: (): Promise<Pet[]> =>
-    httpClient.get<Pet[]>('/pets/my-pets', 'Failed to get user pets'),
+    httpClient.get<Pet[]>('/v1/pets/my-pets', 'Failed to get user pets'),
 
   getPet: (id: string): Promise<Pet> =>
-    httpClient.get<Pet>(`/pets/${id}`, 'Failed to get pet'),
+    httpClient.get<Pet>(`/v1/pets/${id}`, 'Failed to get pet'),
 
   createPet: (data: CreatePetDto): Promise<Pet> =>
-    httpClient.post<Pet>('/pets', data, 'Failed to create pet'),
+    httpClient.post<Pet>('/v1/pets', data, 'Failed to create pet'),
 
   updatePet: ({ id, data }: { id: string; data: UpdatePetDto }): Promise<Pet> =>
-    httpClient.patch<Pet>(`/pets/${id}`, data, 'Failed to update pet'),
+    httpClient.patch<Pet>(`/v1/pets/${id}`, data, 'Failed to update pet'),
 
   deletePet: (id: string): Promise<void> =>
-    httpClient.delete(`/pets/${id}`, 'Failed to delete pet'),
+    httpClient.delete(`/v1/pets/${id}`, 'Failed to delete pet'),
 };
 
 // Hooks

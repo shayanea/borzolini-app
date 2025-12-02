@@ -149,34 +149,36 @@ export default function IntroductionScreen() {
         />
       ) : (
         <ScrollView
+          className="flex-1"
           contentContainerClassName="flex-grow px-6 pb-32"
           showsVerticalScrollIndicator={false}
         >
-          {currentStep === 0 && (
-            <StepOne
-              selectedUserType={formData.userType}
-              onUserTypeSelect={handleUserTypeSelect}
-            />
-          )}
+          <View className="flex-grow px-6 pb-32">
+            {currentStep === 0 && (
+              <StepOne
+                selectedUserType={formData.userType}
+                onUserTypeSelect={handleUserTypeSelect}
+              />
+            )}
 
-          {formData.userType === 'pet-adopter' && currentStep === 1 && (
-            <StepTwo
-              selectedSpecies={formData.selectedSpecies}
-              onSpeciesSelect={handleSpeciesSelect}
-            />
-          )}
+            {formData.userType === 'pet-adopter' && currentStep === 1 && (
+              <StepTwo
+                selectedSpecies={formData.selectedSpecies}
+                onSpeciesSelect={handleSpeciesSelect}
+              />
+            )}
 
-          {formData.userType === 'pet-adopter' && currentStep === 2 && (
-            <StepThree
-              selectedSpecies={formData.selectedSpecies}
-              selectedBreeds={formData.selectedBreeds}
-              onBreedToggle={handleBreedToggle}
-            />
-          )}
+            {formData.userType === 'pet-adopter' && currentStep === 2 && (
+              <StepThree
+                selectedBreeds={formData.selectedBreeds}
+                onBreedToggle={handleBreedToggle}
+              />
+            )}
 
-          {formData.userType === 'pet-adopter' && currentStep === 3 && (
-            <StepFour data={formData} onUpdate={handleUpdateFormData} />
-          )}
+            {formData.userType === 'pet-adopter' && currentStep === 3 && (
+              <StepFour data={formData} onUpdate={handleUpdateFormData} />
+            )}
+          </View>
         </ScrollView>
       )}
 
