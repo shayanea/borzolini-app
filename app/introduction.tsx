@@ -1,17 +1,18 @@
 import { IntroductionData, UserType } from '@/features/introduction/types';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useMemo, useState } from 'react';
+import { ScrollView, View } from 'react-native';
 
-import type { BreedResult } from '@/features/introduction/types/questionnaire';
 import { CompanionQuestionnaire } from '@/features/introduction/components/companion-questionnaire';
-import { Ionicons } from '@expo/vector-icons';
-import { PetSpecies } from '@/types/pet/pet-enums';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { IntroductionFooter } from '@/features/introduction/components/introduction-footer';
+import { IntroductionHeader } from '@/features/introduction/components/introduction-header';
 import { StepFour } from '@/features/introduction/components/step-four';
 import { StepOne } from '@/features/introduction/components/step-one';
 import { StepThree } from '@/features/introduction/components/step-three';
 import { StepTwo } from '@/features/introduction/components/step-two';
+import type { BreedResult } from '@/features/introduction/types/questionnaire';
+import { PetSpecies } from '@/types/pet/pet-enums';
 import { router } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function IntroductionScreen() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -39,7 +40,7 @@ export default function IntroductionScreen() {
     return 4;
   }, [formData.userType]);
 
-  const progressPercentage = ((currentStep + 1) / totalSteps) * 100;
+
 
   const handleUserTypeSelect = (userType: UserType) => {
     setFormData(prev => ({ ...prev, userType }));
@@ -112,29 +113,15 @@ export default function IntroductionScreen() {
   }, [currentStep, formData, questionnaireCompleted]);
 
   return (
-    <SafeAreaView className="flex-1 bg-white" edges={['top', 'left', 'right']}>
-      {/* Header */}
-      <View className="px-6 pt-2 pb-6">
-        <View className="flex-row items-center justify-between mb-6">
-          <TouchableOpacity
-            onPress={handleBack}
-            className="p-2 -ml-2 active:opacity-70"
-          >
-            <Ionicons name="arrow-back" size={24} color="#374151" />
-          </TouchableOpacity>
-          <Text className="text-sm font-medium text-gray-900">
-            {currentStep + 1}/{totalSteps}
-          </Text>
-        </View>
-
-        {/* Progress Bar */}
-        <View className="w-full bg-gray-200 rounded-full h-1">
-          <View
-            className="bg-orange-500 h-1 rounded-full"
-            style={{ width: `${progressPercentage}%` }}
-          />
-        </View>
-      </View>
+    <SafeAreaView
+      className="flex-1 bg-[#17171c]"
+      edges={['top', 'left', 'right']}
+    >
+      <IntroductionHeader
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        onBack={handleBack}
+      />
 
       {/* Content */}
       {formData.userType === 'companion-seeker' && currentStep === 1 ? (
@@ -150,7 +137,7 @@ export default function IntroductionScreen() {
       ) : (
         <ScrollView
           className="flex-1"
-          contentContainerClassName="flex-grow px-6 pb-32"
+          contentContainerClassName="flex-grow px-4 pb-32"
           showsVerticalScrollIndicator={false}
         >
           <View className="flex-grow px-6 pb-32">
@@ -183,21 +170,11 @@ export default function IntroductionScreen() {
       )}
 
       {/* Footer */}
-      <View className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-100">
-        <TouchableOpacity
-          onPress={handleNext}
-          disabled={!canProceed}
-          className={`w-full py-4 rounded-full items-center shadow-lg ${
-            canProceed
-              ? 'bg-orange-500 shadow-orange-500/30 active:bg-orange-600'
-              : 'bg-gray-300 shadow-gray-300/30'
-          }`}
-        >
-          <Text className="text-white font-bold text-base uppercase tracking-wide">
-            {currentStep === totalSteps - 1 ? 'Finish' : 'Continue'}
-          </Text>
-        </TouchableOpacity>
-      </View>
+      <IntroductionFooter
+        onNext={handleNext}
+        canProceed={canProceed}
+        isLastStep={currentStep === totalSteps - 1}
+      />
     </SafeAreaView>
   );
 }

@@ -1,106 +1,46 @@
-import { View, Text, ScrollView, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuth } from '@/hooks/use-auth';
+import { Ionicons } from '@expo/vector-icons';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const { user } = useAuth();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#E5E7EB]">
+    <SafeAreaView className="flex-1 bg-[#17171c]">
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-6 py-6"
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-blue-500 mb-2">
-            Hello, {user?.firstName || 'there'}!
-          </Text>
-          <Text className="text-secondary-600">
-            Daily overview and quick updates
-          </Text>
-        </View>
-
-        {/* Active Training Streak */}
-        <View className="bg-white rounded-xl p-6 mb-4 shadow-sm">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-lg font-semibold text-secondary-900">
-              Active Training Streak
-            </Text>
-            <MaterialCommunityIcons
-              name="fire"
-              size={24}
-              color="#fb8500"
-            />
-          </View>
-          <Text className="text-3xl font-bold text-primary-600 mb-2">7</Text>
-          <Text className="text-secondary-600">days in a row</Text>
-        </View>
-
-        {/* Upcoming Health Tasks */}
-        <View className="bg-white rounded-xl p-6 mb-4 shadow-sm">
-          <Text className="text-lg font-semibold text-secondary-900 mb-4">
-            Upcoming Health Tasks
-          </Text>
+        <View className="flex-row items-center justify-between mb-6">
           <View>
-            <View className="flex-row items-center justify-between py-2 border-b border-secondary-100 mb-3">
-              <View className="flex-row items-center">
-                <MaterialCommunityIcons
-                  name="calendar-clock"
-                  size={20}
-                  color="#fb8500"
-                />
-                <Text className="ml-3 text-secondary-900">
-                  Vaccination Due
+            <Text className="text-gray-400 text-sm mb-1">Welcome back,</Text>
+            <MaskedView
+              maskElement={
+                <Text className="text-2xl font-bold">
+                  {user?.firstName} 
                 </Text>
-              </View>
-              <Text className="text-secondary-600 text-sm">Tomorrow</Text>
-            </View>
-            <View className="flex-row items-center justify-between py-2">
-              <View className="flex-row items-center">
-                <MaterialCommunityIcons
-                  name="weight"
-                  size={20}
-                  color="#64748b"
-                />
-                <Text className="ml-3 text-secondary-900">
-                  Weight Check
+              }
+            >
+              <LinearGradient
+                colors={['#a855f7', '#ec4899']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+              >
+                <Text className="text-2xl font-bold opacity-0">
+                  {user?.firstName}
                 </Text>
-              </View>
-              <Text className="text-secondary-600 text-sm">In 3 days</Text>
-            </View>
+              </LinearGradient>
+            </MaskedView>
           </View>
-        </View>
-
-        {/* Quick Actions */}
-        <View className="bg-white rounded-xl p-6 shadow-sm">
-          <Text className="text-lg font-semibold text-secondary-900 mb-4">
-            Quick Actions
-          </Text>
-          <View className="flex-row flex-wrap gap-3">
-            <TouchableOpacity className="bg-primary-50 px-4 py-3 rounded-lg flex-1 min-w-[45%]">
-              <MaterialCommunityIcons
-                name="camera"
-                size={24}
-                color="#fb8500"
-              />
-              <Text className="text-primary-600 font-medium mt-2">
-                Skin Scan
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity className="bg-secondary-100 px-4 py-3 rounded-lg flex-1 min-w-[45%]">
-              <MaterialCommunityIcons
-                name="school"
-                size={24}
-                color="#64748b"
-              />
-              <Text className="text-secondary-700 font-medium mt-2">
-                Start Training
-              </Text>
-            </TouchableOpacity>
-          </View>
+          
+          <TouchableOpacity className="w-10 h-10 rounded-full bg-[#2a2a30] items-center justify-center">
+            <Ionicons name="notifications-outline" size={22} color="#fff" />
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>

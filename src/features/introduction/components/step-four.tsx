@@ -1,10 +1,10 @@
 import { Modal, Platform, Text, TouchableOpacity, View } from 'react-native';
 
 import { AuthField } from '@/features/auth/components/auth-field';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { IntroductionData } from '../types';
 import { Ionicons } from '@expo/vector-icons';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useState } from 'react';
+import { IntroductionData } from '../types';
 
 interface StepFourProps {
   data: IntroductionData;
@@ -111,7 +111,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
 
   return (
     <View className="flex-1">
-      <Text className="text-3xl font-bold text-gray-900 mb-4">
+      <Text className="text-3xl font-bold text-white mb-4">
         Final Steps!
       </Text>
       <Text className="text-base text-gray-600 leading-6 mb-8">
@@ -158,7 +158,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
               onPress={() => setShowCountryModal(true)}
               className="w-24 h-[52px] border border-secondary-200 rounded-xl bg-white flex-row items-center justify-between px-3"
             >
-              <Text className="text-base text-gray-900">
+              <Text className="text-base text-white">
                 {selectedCountry.flag} {selectedCountry.code}
               </Text>
               <Ionicons name="chevron-down" size={16} color="#6b7280" />
@@ -188,7 +188,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
             className="w-full px-4 py-3.5 border border-secondary-200 rounded-xl bg-white flex-row justify-between items-center"
           >
             <Text
-              className={`text-base ${data.dateOfBirth ? 'text-gray-900' : 'text-gray-400'}`}
+              className={`text-base ${data.dateOfBirth ? 'text-white' : 'text-gray-400'}`}
             >
               {data.dateOfBirth || 'mm/dd/yyyy'}
             </Text>
@@ -208,7 +208,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
             className="w-full px-4 py-3.5 border border-secondary-200 rounded-xl bg-white flex-row justify-between items-center"
           >
             <Text
-              className={`text-base ${data.gender ? 'text-gray-900' : 'text-gray-400'}`}
+              className={`text-base ${data.gender ? 'text-white' : 'text-gray-400'}`}
             >
               {data.gender
                 ? GENDER_OPTIONS.find(g => g.value === data.gender)?.label
@@ -237,7 +237,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
                     className="bg-white w-full rounded-2xl p-4 shadow-xl"
                     onStartShouldSetResponder={() => true}
                   >
-                    <Text className="text-lg font-bold text-gray-900 mb-4 text-center">
+                    <Text className="text-lg font-bold text-white mb-4 text-center">
                       Select Date of Birth
                     </Text>
                     <DateTimePicker
@@ -313,7 +313,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
             className="flex-1 bg-black/50 justify-center items-center p-6"
           >
             <View className="bg-white w-full rounded-2xl p-4 shadow-xl max-h-[80%]">
-              <Text className="text-lg font-bold text-gray-900 mb-4 text-center">
+              <Text className="text-lg font-bold text-white mb-4 text-center">
                 Select Country
               </Text>
               <View className="max-h-[400px]">
@@ -326,7 +326,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
                     }}
                     className="py-4 border-b border-gray-100 last:border-0 flex-row items-center justify-between"
                   >
-                    <Text className="text-base text-gray-900">
+                    <Text className="text-base text-white">
                       {option.flag} {option.country}
                     </Text>
                     <Text
@@ -354,7 +354,7 @@ export function StepFour({ data, onUpdate }: StepFourProps) {
             className="flex-1 bg-black/50 justify-center items-center p-6"
           >
             <View className="bg-white w-full rounded-2xl p-4 shadow-xl">
-              <Text className="text-lg font-bold text-gray-900 mb-4 text-center">
+              <Text className="text-lg font-bold text-white mb-4 text-center">
                 Select Gender
               </Text>
               {GENDER_OPTIONS.map(option => (

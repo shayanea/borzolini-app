@@ -115,18 +115,18 @@ export default function MapScreen() {
   // Show loading while getting location
   if (isGettingLocation) {
     return (
-      <View className="flex-1 bg-white">
-        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-white z-10 shadow-sm">
+      <View className="flex-1 bg-[#17171c]">
+        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-[#17171c] z-10 shadow-sm">
           <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2">
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-black">
+          <Text className="text-lg font-semibold text-white">
             Find Nearby Adoption Locations
           </Text>
         </View>
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#f97316" />
-          <Text className="text-gray-600 mt-4">Getting your location...</Text>
+          <Text className="text-secondary-400 mt-4">Getting your location...</Text>
         </View>
       </View>
     );
@@ -135,12 +135,12 @@ export default function MapScreen() {
   // Show error message if location is unavailable or permission denied
   if (locationError || (!userLocation && !locationPermission)) {
     return (
-      <View className="flex-1 bg-white">
-        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-white z-10 shadow-sm">
+      <View className="flex-1 bg-[#17171c]">
+        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-[#17171c] z-10 shadow-sm">
           <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2">
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-black">
+          <Text className="text-lg font-semibold text-white">
             Find Nearby Adoption Locations
           </Text>
         </View>
@@ -149,7 +149,7 @@ export default function MapScreen() {
           <Text className="text-red-600 text-center text-lg font-semibold mt-4 mb-2">
             Location Unavailable
           </Text>
-          <Text className="text-gray-600 text-center mb-6 leading-6">
+          <Text className="text-secondary-400 text-center mb-6 leading-6">
             {locationError ||
               'We need your location to show nearby adoption centers. Please enable location services in your device settings.'}
           </Text>
@@ -203,18 +203,18 @@ export default function MapScreen() {
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-white">
-        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-white z-10 shadow-sm">
+      <View className="flex-1 bg-[#17171c]">
+        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-[#17171c] z-10 shadow-sm">
           <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2">
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-black">
+          <Text className="text-lg font-semibold text-white">
             Find Nearby Adoption Locations
           </Text>
         </View>
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#f97316" />
-          <Text className="text-gray-600 mt-4">Loading adoption centers...</Text>
+          <Text className="text-secondary-400 mt-4">Loading adoption centers...</Text>
         </View>
       </View>
     );
@@ -222,12 +222,12 @@ export default function MapScreen() {
 
   if (isError) {
     return (
-      <View className="flex-1 bg-white">
-        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-white z-10 shadow-sm">
+      <View className="flex-1 bg-[#17171c]">
+        <View className="flex-row items-center pt-[60px] pb-4 px-4 bg-[#17171c] z-10 shadow-sm">
           <TouchableOpacity onPress={() => router.back()} className="p-2 mr-2">
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="#ffffff" />
           </TouchableOpacity>
-          <Text className="text-lg font-semibold text-black">
+          <Text className="text-lg font-semibold text-white">
             Find Nearby Adoption Locations
           </Text>
         </View>
@@ -236,7 +236,7 @@ export default function MapScreen() {
           <Text className="text-red-600 text-center text-lg font-semibold mt-4 mb-2">
             Failed to load adoption centers
           </Text>
-          <Text className="text-gray-600 text-center">
+          <Text className="text-secondary-400 text-center">
             Please check your connection and try again.
           </Text>
         </View>
@@ -259,17 +259,17 @@ export default function MapScreen() {
 
       <View className="flex-1 px-4 pb-4">
         {locations.length === 0 ? (
-          <View className="flex-1 justify-center items-center px-6 bg-gray-50 rounded-2xl">
-            <Ionicons name="paw-outline" size={64} color="#9ca3af" />
-            <Text className="text-gray-700 text-center text-lg font-semibold mt-4 mb-2">
+          <View className="flex-1 justify-center items-center px-6 bg-[#1f1f24] rounded-2xl">
+            <Ionicons name="paw-outline" size={64} color="#64748b" />
+            <Text className="text-white text-center text-lg font-semibold mt-4 mb-2">
               No centers found
             </Text>
-            <Text className="text-gray-500 text-center">
+            <Text className="text-secondary-400 text-center">
               We couldn't find any adoption centers in your area. Try again later.
             </Text>
           </View>
         ) : (
-          <View className="flex-1 rounded-2xl overflow-hidden border-2 border-gray-200">
+          <View className="flex-1 rounded-2xl overflow-hidden border-2 border-secondary-800">
             <LeafletMap
               locations={locations.map(loc => ({
                 id: loc.id,
@@ -286,8 +286,8 @@ export default function MapScreen() {
             />
 
             {/* Location count badge */}
-            <View className="absolute top-4 right-4 bg-white px-4 py-2 rounded-full shadow-lg">
-              <Text className="text-sm font-semibold text-gray-900">
+            <View className="absolute top-4 right-4 bg-[#1f1f24] px-4 py-2 rounded-full shadow-lg">
+              <Text className="text-sm font-semibold text-white">
                 {locations.length} {locations.length === 1 ? 'Center' : 'Centers'}
               </Text>
             </View>

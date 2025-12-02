@@ -30,55 +30,55 @@ export function ActivityDetail({
       presentationStyle="pageSheet"
       onRequestClose={onClose}
     >
-      <SafeAreaView className="flex-1 bg-white">
-        <View className="flex-row justify-between items-center px-4 py-2 border-b border-gray-100">
+      <SafeAreaView className="flex-1 bg-[#17171c]">
+        <View className="flex-row justify-between items-center px-4 py-2 border-b border-secondary-800">
           <TouchableOpacity onPress={onClose} className="p-2">
-            <MaterialCommunityIcons name="close" size={24} color="#64748b" />
+            <MaterialCommunityIcons name="close" size={24} color="#94a3b8" />
           </TouchableOpacity>
-          <Text className="text-lg font-bold text-secondary-900">Activity Details</Text>
+          <Text className="text-lg font-bold text-white">Activity Details</Text>
           <View className="w-10" /> 
         </View>
 
         <ScrollView className="flex-1 px-6 py-4">
-          <Text className="text-2xl font-bold text-secondary-900 mb-2">
+          <Text className="text-2xl font-bold text-white mb-2">
             {activity.title}
           </Text>
           
           <View className="flex-row flex-wrap gap-2 mb-6">
-            <View className="bg-primary-100 px-3 py-1 rounded-full">
-              <Text className="text-primary-700 font-medium capitalize">
+            <View className="bg-primary-900/30 px-3 py-1 rounded-full">
+              <Text className="text-primary-300 font-medium capitalize">
                 {activity.difficulty}
               </Text>
             </View>
             {activity.avg_duration_minutes && (
-              <View className="bg-secondary-100 px-3 py-1 rounded-full">
-                <Text className="text-secondary-700">
+              <View className="bg-secondary-800 px-3 py-1 rounded-full">
+                <Text className="text-secondary-300">
                   {activity.avg_duration_minutes} min
                 </Text>
               </View>
             )}
           </View>
 
-          <Text className="text-lg font-semibold text-secondary-900 mb-2">
+          <Text className="text-lg font-semibold text-white mb-2">
             Instructions
           </Text>
           
           {/* TODO: Replace with Markdown renderer */}
-          <View className="bg-secondary-50 p-4 rounded-xl mb-6">
-            <Text className="text-secondary-700 leading-6">
+          <View className="bg-secondary-800 p-4 rounded-xl mb-6">
+            <Text className="text-secondary-300 leading-6">
               {activity.content_markdown}
             </Text>
           </View>
 
           {activity.equipment && activity.equipment.length > 0 && (
             <View className="mb-6">
-              <Text className="text-lg font-semibold text-secondary-900 mb-2">
+              <Text className="text-lg font-semibold text-white mb-2">
                 Equipment Needed
               </Text>
               <View className="flex-row flex-wrap gap-2">
                 {activity.equipment.map((item, index) => (
-                  <View key={index} className="bg-gray-100 px-3 py-1 rounded-lg">
-                    <Text className="text-gray-700">{item}</Text>
+                  <View key={index} className="bg-secondary-800 px-3 py-1 rounded-lg">
+                    <Text className="text-secondary-300">{item}</Text>
                   </View>
                 ))}
               </View>
@@ -86,12 +86,13 @@ export function ActivityDetail({
           )}
 
           <View className="mb-8">
-            <Text className="text-lg font-semibold text-secondary-900 mb-2">
+            <Text className="text-lg font-semibold text-white mb-2">
               Notes (Optional)
             </Text>
             <TextInput
-              className="bg-white border border-gray-200 rounded-xl p-4 h-32 text-secondary-900"
+              className="bg-secondary-800 border border-secondary-700 rounded-xl p-4 h-32 text-white"
               placeholder="How did it go? Any difficulties?"
+              placeholderTextColor="#64748b"
               multiline
               textAlignVertical="top"
               value={notes}
@@ -100,7 +101,7 @@ export function ActivityDetail({
           </View>
         </ScrollView>
 
-        <View className="p-4 border-t border-gray-100">
+        <View className="p-4 border-t border-secondary-800">
           <TouchableOpacity
             onPress={() => onComplete(notes)}
             disabled={isCompleting}

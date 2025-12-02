@@ -24,7 +24,7 @@ export function AuthField({
     .trim();
 
   const inputClasses = [
-    'w-full px-4 py-3.5 border border-secondary-200 rounded-xl text-secondary-900 bg-white text-base',
+    'w-full px-4 py-3.5 border border-secondary-700 rounded-xl text-white bg-secondary-800 text-base',
     inputClassName,
   ]
     .filter(Boolean)
@@ -35,7 +35,7 @@ export function AuthField({
     <View className={containerClasses}>
       {label ? (
         <View className="flex-row items-center mb-2 gap-1">
-          <Text className="text-xs font-bold text-secondary-500 uppercase tracking-wider">
+          <Text className="text-xs font-bold text-secondary-400 uppercase tracking-wider">
             {label}
           </Text>
           {required ? (
@@ -46,7 +46,7 @@ export function AuthField({
       <View className="relative">
         <TextInput
           className={inputClasses}
-          placeholderTextColor={placeholderTextColor ?? '#94a3b8'}
+          placeholderTextColor={placeholderTextColor ?? '#64748b'}
           {...textInputProps}
         />
         {renderRight ? (

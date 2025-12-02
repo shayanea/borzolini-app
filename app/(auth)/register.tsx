@@ -23,7 +23,7 @@ export default function RegisterScreen() {
   } = useRegisterForm();
 
   return (
-    <View className="flex-1 bg-slate-100">
+    <View className="flex-1 bg-[#17171c]">
       <SafeAreaView className="flex-1 justify-center px-4">
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -33,11 +33,11 @@ export default function RegisterScreen() {
             contentContainerClassName="flex-grow justify-center"
             keyboardShouldPersistTaps="handled"
           >
-            <View className="bg-white rounded-3xl p-8 shadow-xl mx-2">
-              <Text className="text-3xl font-bold text-center text-blue-500 mb-2 leading-tight">
+            <View className="bg-[#1f1f24] rounded-3xl p-8 shadow-xl mx-2">
+              <Text className="text-3xl font-bold text-center text-blue-400 mb-2 leading-tight">
                 Sign Up
               </Text>
-              <Text className="text-center text-secondary-500 text-base mb-8">
+              <Text className="text-center text-secondary-400 text-base mb-8">
                 Sign up to access your healthcare services and manage
                 appointments
               </Text>
@@ -111,12 +111,12 @@ export default function RegisterScreen() {
               </TouchableOpacity>
 
               <View className="flex-row justify-center items-center">
-                <Text className="text-secondary-600 text-sm font-medium">
+                <Text className="text-secondary-400 text-sm font-medium">
                   Already have an account?{' '}
                 </Text>
                 <Link href="/(auth)/login" asChild>
                   <TouchableOpacity>
-                    <Text className="text-blue-500 font-bold text-sm">Log In</Text>
+                    <Text className="text-blue-400 font-bold text-sm">Log In</Text>
                   </TouchableOpacity>
                 </Link>
               </View>

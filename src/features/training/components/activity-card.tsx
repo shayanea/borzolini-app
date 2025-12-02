@@ -13,29 +13,29 @@ export function ActivityCard({ activity, onPress, isCompleted }: ActivityCardPro
   const getDifficultyColor = (difficulty: ActivityDifficulty) => {
     switch (difficulty) {
       case ActivityDifficulty.EASY:
-        return 'text-green-600 bg-green-100';
+        return 'text-green-400 bg-green-900/30';
       case ActivityDifficulty.MODERATE:
-        return 'text-yellow-600 bg-yellow-100';
+        return 'text-yellow-400 bg-yellow-900/30';
       case ActivityDifficulty.ADVANCED:
-        return 'text-red-600 bg-red-100';
+        return 'text-red-400 bg-red-900/30';
       default:
-        return 'text-gray-600 bg-gray-100';
+        return 'text-gray-400 bg-gray-800';
     }
   };
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`bg-white rounded-xl p-4 mb-3 shadow-sm border ${
+      className={`bg-[#1f1f24] rounded-xl p-4 mb-3 shadow-sm border ${
         isCompleted ? 'border-green-500' : 'border-transparent'
       }`}
     >
       <View className="flex-row justify-between items-start">
         <View className="flex-1 mr-4">
-          <Text className="text-lg font-semibold text-secondary-900 mb-1">
+          <Text className="text-lg font-semibold text-white mb-1">
             {activity.title}
           </Text>
-          <Text className="text-secondary-600 text-sm mb-3" numberOfLines={2}>
+          <Text className="text-secondary-400 text-sm mb-3" numberOfLines={2}>
             {activity.summary}
           </Text>
           
@@ -47,22 +47,22 @@ export function ActivityCard({ activity, onPress, isCompleted }: ActivityCardPro
             </View>
             
             {activity.avg_duration_minutes && (
-              <View className="flex-row items-center px-2 py-1 rounded-full bg-secondary-100">
-                <MaterialCommunityIcons name="clock-outline" size={12} color="#475569" />
-                <Text className="text-xs text-secondary-700 ml-1">
+              <View className="flex-row items-center px-2 py-1 rounded-full bg-secondary-800">
+                <MaterialCommunityIcons name="clock-outline" size={12} color="#94a3b8" />
+                <Text className="text-xs text-secondary-300 ml-1">
                   {activity.avg_duration_minutes} min
                 </Text>
               </View>
             )}
 
             {activity.indoor !== null && (
-              <View className="flex-row items-center px-2 py-1 rounded-full bg-blue-50">
+              <View className="flex-row items-center px-2 py-1 rounded-full bg-blue-900/30">
                 <MaterialCommunityIcons 
                   name={activity.indoor ? "home-outline" : "tree-outline"} 
                   size={12} 
-                  color="#0ea5e9" 
+                  color="#60a5fa" 
                 />
-                <Text className="text-xs text-blue-700 ml-1">
+                <Text className="text-xs text-blue-300 ml-1">
                   {activity.indoor ? 'Indoor' : 'Outdoor'}
                 </Text>
               </View>
@@ -71,8 +71,8 @@ export function ActivityCard({ activity, onPress, isCompleted }: ActivityCardPro
         </View>
 
         {isCompleted && (
-          <View className="bg-green-100 rounded-full p-1">
-            <MaterialCommunityIcons name="check" size={20} color="#16a34a" />
+          <View className="bg-green-900/30 rounded-full p-1">
+            <MaterialCommunityIcons name="check" size={20} color="#4ade80" />
           </View>
         )}
       </View>

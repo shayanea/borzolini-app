@@ -94,10 +94,10 @@ export function TrainingDashboard() {
         }
       >
         <View className="mb-6">
-          <Text className="text-3xl font-bold text-secondary-900 mb-2">
+          <Text className="text-3xl font-bold text-white mb-2">
             Today's Training
           </Text>
-          <Text className="text-secondary-600">
+          <Text className="text-secondary-400">
             {pendingAssignments.length > 0
               ? `You have ${pendingAssignments.length} activities pending`
               : 'All done for today! Great job!'}
@@ -106,7 +106,7 @@ export function TrainingDashboard() {
 
         {pendingAssignments.length > 0 && (
           <View className="mb-8">
-            <Text className="text-lg font-semibold text-secondary-900 mb-4">
+            <Text className="text-lg font-semibold text-white mb-4">
               To Do
             </Text>
             {pendingAssignments.map(assignment => (
@@ -121,7 +121,7 @@ export function TrainingDashboard() {
 
         {completedAssignments.length > 0 && (
           <View>
-            <Text className="text-lg font-semibold text-secondary-900 mb-4">
+            <Text className="text-lg font-semibold text-white mb-4">
               Completed
             </Text>
             {completedAssignments.map(assignment => (
@@ -136,11 +136,11 @@ export function TrainingDashboard() {
         )}
 
         {assignments.length === 0 && !loading && (
-          <View className="bg-white rounded-xl p-8 items-center justify-center shadow-sm">
-            <Text className="text-lg font-semibold text-secondary-900 mb-2">
+          <View className="bg-[#1f1f24] rounded-xl p-8 items-center justify-center shadow-sm">
+            <Text className="text-lg font-semibold text-white mb-2">
               No Assignments Yet
             </Text>
-            <Text className="text-secondary-600 text-center">
+            <Text className="text-secondary-400 text-center">
               Check back later for your daily training plan.
             </Text>
           </View>

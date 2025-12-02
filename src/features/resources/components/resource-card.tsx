@@ -36,18 +36,18 @@ export function ResourceCard({ resource }: ResourceCardProps) {
   return (
     <TouchableOpacity
       onPress={handlePress}
-      className="flex-row items-center p-4 bg-white rounded-xl mb-3 shadow-sm"
+      className="flex-row items-center p-4 bg-[#1f1f24] rounded-xl mb-3 shadow-sm"
     >
-      <View className="w-10 h-10 rounded-full bg-gray-50 items-center justify-center">
+      <View className="w-10 h-10 rounded-full bg-secondary-800 items-center justify-center">
         <MaterialCommunityIcons name={icon.name} size={24} color={icon.color} />
       </View>
 
       <View className="ml-4 flex-1">
-        <Text className="text-secondary-900 font-medium text-base mb-1">
+        <Text className="text-white font-medium text-base mb-1">
           {resource.title}
         </Text>
         {resource.description && (
-          <Text className="text-secondary-600 text-sm" numberOfLines={2}>
+          <Text className="text-secondary-400 text-sm" numberOfLines={2}>
             {resource.description}
           </Text>
         )}

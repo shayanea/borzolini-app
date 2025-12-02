@@ -1,33 +1,23 @@
 import React from 'react';
-import { Image, Text, View, type ImageSourcePropType } from 'react-native';
-import { appTheme } from '@/constants/theme';
-import { styles } from './bottom-tab-bar.styles';
+import { Image, type ImageSourcePropType } from 'react-native';
 
-interface TabBarIconProps {
+export interface TabBarIconProps {
   focused: boolean;
   icon: ImageSourcePropType;
-  label: string;
+  color?: string;
+  size?: number;
 }
 
-export function TabBarIcon({ focused, icon, label }: TabBarIconProps) {
-  const iconColor = focused ? appTheme.colors.primary : appTheme.colors.textSecondary;
-  const textColor = focused ? appTheme.colors.primary : appTheme.colors.textSecondary;
-
+export function TabBarIcon({  icon, color, size = 24 }: TabBarIconProps) {
   return (
-    <View style={styles.iconContainer}>
-      <Image
-        source={icon}
-        style={[
-          styles.icon,
-          focused ? styles.iconFocused : styles.iconUnfocused,
-          { tintColor: iconColor },
-        ]}
-        resizeMode="contain"
-      />
-      <Text style={[styles.label, { color: textColor }]}>
-        {label}
-      </Text>
-    </View>
+    <Image
+      source={icon}
+      style={{
+        width: size,
+        height: size,
+        tintColor: color,
+      }}
+      resizeMode="contain"
+    />
   );
 }
-

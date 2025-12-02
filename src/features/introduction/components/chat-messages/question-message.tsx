@@ -1,16 +1,16 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { QuestionData } from '../../hooks/use-companion-questionnaire';
 import {
-  KidLevel,
-  SpaceScore,
-  Allergy,
-  Vibe,
-  Grooming,
-  Activity,
+    Activity,
+    Allergy,
+    Grooming,
+    KidLevel,
+    SpaceScore,
+    Vibe,
 } from '@/features/introduction/types/questionnaire';
 import { PetSpecies } from '@/types/pet/pet-enums';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import { QuestionData } from '../../hooks/use-companion-questionnaire';
 
 interface QuestionMessageProps {
   question: QuestionData;
@@ -50,7 +50,7 @@ export function QuestionMessage({
   return (
     <View className="mb-6">
       <View className="bg-gray-100 rounded-3xl rounded-tl-sm p-4 mb-4 max-w-[85%]">
-        <Text className="text-lg font-bold text-gray-900 mb-1">
+        <Text className="text-lg font-bold text-white mb-1">
           {question.title}
         </Text>
         <Text className="text-sm text-gray-600 leading-5">
@@ -106,7 +106,7 @@ export function QuestionMessage({
                 className={`text-base font-medium ${
                   isDisabled && currentAnswer !== option.value
                     ? 'text-gray-400'
-                    : 'text-gray-900'
+                    : 'text-white'
                 }`}
               >
                 {option.label}

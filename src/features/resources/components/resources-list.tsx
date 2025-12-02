@@ -75,17 +75,17 @@ export function ResourcesList() {
       }
     >
       <View className="mb-6">
-        <Text className="text-3xl font-bold text-secondary-900 mb-2">
+        <Text className="text-3xl font-bold text-white mb-2">
           Resources
         </Text>
-        <Text className="text-secondary-600">
+        <Text className="text-secondary-400">
           Knowledge base and community support
         </Text>
       </View>
 
       {videos.length > 0 && (
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-secondary-900 mb-3">
+          <Text className="text-lg font-semibold text-white mb-3">
             Videos & Guides
           </Text>
           {videos.map(resource => (
@@ -96,7 +96,7 @@ export function ResourcesList() {
 
       {discord.length > 0 && (
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-secondary-900 mb-3">
+          <Text className="text-lg font-semibold text-white mb-3">
             Community
           </Text>
           {discord.map(resource => (
@@ -107,7 +107,7 @@ export function ResourcesList() {
 
       {audio.length > 0 && (
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-secondary-900 mb-3">
+          <Text className="text-lg font-semibold text-white mb-3">
             Audio & Podcasts
           </Text>
           {audio.map(resource => (
@@ -118,7 +118,7 @@ export function ResourcesList() {
 
       {others.length > 0 && (
         <View className="mb-6">
-          <Text className="text-lg font-semibold text-secondary-900 mb-3">
+          <Text className="text-lg font-semibold text-white mb-3">
             Other Resources
           </Text>
           {others.map(resource => (
@@ -128,11 +128,11 @@ export function ResourcesList() {
       )}
 
       {resources.length === 0 && !loading && (
-        <View className="bg-white rounded-xl p-8 items-center justify-center shadow-sm">
-          <Text className="text-lg font-semibold text-secondary-900 mb-2">
+        <View className="bg-[#1f1f24] rounded-xl p-8 items-center justify-center shadow-sm">
+          <Text className="text-lg font-semibold text-white mb-2">
             No Resources Yet
           </Text>
-          <Text className="text-secondary-600 text-center">
+          <Text className="text-secondary-400 text-center">
             Check back later for new content.
           </Text>
         </View>

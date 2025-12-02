@@ -1,9 +1,9 @@
 import {
-  ActivityIndicator,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 import { useBreeds } from '@/services/breeds';
@@ -55,7 +55,7 @@ export function StepThree({ selectedBreeds, onBreedToggle }: StepThreeProps) {
 
   return (
     <View className="flex-1">
-      <Text className="text-3xl font-bold text-gray-900 mb-4">
+      <Text className="text-3xl font-bold text-white mb-4">
         Species Preferences
       </Text>
       <Text className="text-base text-gray-600 leading-6 mb-8">

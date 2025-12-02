@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { Card } from '../../../components/ui/card';
 import { UserType } from '../types';
 
 interface StepOneProps {
@@ -16,10 +17,10 @@ export function StepOne({ selectedUserType, onUserTypeSelect }: StepOneProps) {
 
   return (
     <View className="flex-1">
-      <Text className="text-3xl font-bold text-gray-900 mb-4">
+      <Text className="text-3xl font-bold text-white mb-4">
         Tell us about yourself
       </Text>
-      <Text className="text-base text-gray-600 leading-6 mb-8">
+      <Text className="text-base text-white/70 leading-6 mb-8">
         Are you a Pet Owner ready to find loving homes? A Pet Adopter looking for
         your new best friend? Or simply looking to discover the perfect companion
         for your lifestyle?
@@ -33,20 +34,21 @@ export function StepOne({ selectedUserType, onUserTypeSelect }: StepOneProps) {
               key={option.value}
               onPress={() => onUserTypeSelect(option.value)}
               activeOpacity={0.7}
-              className={`flex-row items-center justify-between p-6 rounded-2xl border-2 ${
-                isSelected
-                  ? 'border-orange-500 bg-orange-50'
-                  : 'border-gray-200 bg-white'
-              }`}
             >
-              <Text className="text-base font-semibold text-gray-900">
-                {option.label}
-              </Text>
-              <Ionicons
-                name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
-                size={24}
-                color={isSelected ? '#f97316' : '#d1d5db'}
-              />
+              <Card
+                className={`flex-row items-center justify-between ${
+                  isSelected ? 'border-orange-500 bg-white/5' : ''
+                }`}
+              >
+                <Text className="text-base font-semibold text-white">
+                  {option.label}
+                </Text>
+                <Ionicons
+                  name={isSelected ? 'checkmark-circle' : 'ellipse-outline'}
+                  size={24}
+                  color={isSelected ? '#f97316' : '#52525b'}
+                />
+              </Card>
             </TouchableOpacity>
           );
         })}

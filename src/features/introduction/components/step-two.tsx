@@ -23,7 +23,7 @@ const SPECIES_OPTIONS = [
 export function StepTwo({ selectedSpecies, onSpeciesSelect }: StepTwoProps) {
   return (
     <View className="flex-1">
-      <Text className="text-3xl font-bold text-gray-900 mb-4">
+      <Text className="text-3xl font-bold text-white mb-4">
         Let's Find Your Match!
       </Text>
       <Text className="text-base text-gray-600 leading-6 mb-8">
@@ -47,7 +47,7 @@ export function StepTwo({ selectedSpecies, onSpeciesSelect }: StepTwoProps) {
               }`}
             >
               <Text className="text-4xl mb-2">{option.icon}</Text>
-              <Text className="text-sm font-medium text-gray-900 text-center">
+              <Text className="text-sm font-medium text-white text-center">
                 {option.label}
               </Text>
             </TouchableOpacity>
