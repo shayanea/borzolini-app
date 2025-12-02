@@ -1,17 +1,17 @@
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
+import { useLogin } from '@/features/auth/hooks/use-login';
 import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useLogin } from '@/features/auth/hooks/use-login';
 
 export default function LoginScreen() {
   const {
@@ -37,7 +37,7 @@ export default function LoginScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View className="bg-[#1f1f24] rounded-3xl p-8 shadow-xl mx-2">
-              <Text className="text-3xl font-bold text-center text-blue-400 mb-8 leading-tight">
+              <Text className="text-3xl font-bold text-center text-primary mb-8 leading-tight">
                 Hello,{'\n'}
                 <Text className="text-white">Welcome Back</Text>
               </Text>
@@ -87,14 +87,14 @@ export default function LoginScreen() {
 
               <Link href="/(auth)/forgot-password" asChild>
                 <TouchableOpacity className="self-end mb-8">
-                  <Text className="text-primary-400 text-sm font-semibold">
+                  <Text className="text-primary text-sm font-semibold">
                     Forgot Password?
                   </Text>
                 </TouchableOpacity>
               </Link>
 
               <TouchableOpacity
-                className="w-full bg-primary-500 py-4 rounded-full mb-8 shadow-lg shadow-primary-500/30 active:bg-primary-600"
+                className="w-full bg-primary py-4 rounded-full mb-8 shadow-lg shadow-primary/30 active:opacity-90"
                 onPress={handleLogin}
                 disabled={isLoggingIn}
               >
@@ -123,7 +123,7 @@ export default function LoginScreen() {
                 </Text>
                 <Link href="/(auth)/register" asChild>
                   <TouchableOpacity>
-                    <Text className="text-primary-400 font-bold text-sm">
+                    <Text className="text-primary font-bold text-sm">
                       Sign Up
                     </Text>
                   </TouchableOpacity>

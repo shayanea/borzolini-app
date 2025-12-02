@@ -1,16 +1,16 @@
 import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 import { AuthField } from '@/features/auth/components/auth-field';
+import { useForgotPasswordForm } from '@/features/auth/hooks/use-forgot-password';
 import { Link } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForgotPasswordForm } from '@/features/auth/hooks/use-forgot-password';
 
 export default function ForgotPasswordScreen() {
   const { email, setEmail, handleSubmit, isSubmitting } =
@@ -28,7 +28,7 @@ export default function ForgotPasswordScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View className="bg-[#1f1f24] rounded-3xl p-8 shadow-xl mx-2">
-              <Text className="text-3xl font-bold text-center text-blue-400 mb-2 leading-tight">
+              <Text className="text-3xl font-bold text-center text-primary mb-2 leading-tight">
                 Forgot Password?
               </Text>
               <Text className="text-center text-secondary-400 text-base mb-8">
@@ -48,7 +48,7 @@ export default function ForgotPasswordScreen() {
               />
 
               <TouchableOpacity
-                className="w-full bg-orange-500 py-4 rounded-full mb-6 shadow-lg shadow-orange-500/30 active:bg-orange-600"
+                className="w-full bg-primary py-4 rounded-full mb-6 shadow-lg shadow-primary/30 active:opacity-90"
                 onPress={handleSubmit}
                 disabled={isSubmitting}
               >
@@ -59,7 +59,7 @@ export default function ForgotPasswordScreen() {
 
               <Link href="/(auth)/login" asChild>
                 <TouchableOpacity>
-                  <Text className="text-blue-400 text-center font-bold text-sm">
+                  <Text className="text-primary text-center font-bold text-sm">
                     Back to Login
                   </Text>
                 </TouchableOpacity>

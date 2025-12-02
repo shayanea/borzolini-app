@@ -1,14 +1,13 @@
 import {
-	QUERY_CONFIG,
-	QUERY_KEYS,
-	createStandardMutationHook,
-	createStandardQueryHook,
+    QUERY_KEYS,
+    createStandardMutationHook,
+    createStandardQueryHook
 } from '@/hooks/utils';
 import {
-	AuthResponse,
-	ForgotPasswordData,
-	LoginData,
-	RegisterData,
+    AuthResponse,
+    ForgotPasswordData,
+    LoginData,
+    RegisterData,
 } from '@/types/auth';
 import { HttpRequestError, httpClient } from './http-client';
 
@@ -160,7 +159,7 @@ export function useCurrentUser() {
     {
       context: 'Current User',
       errorMessage: 'Failed to get user info',
-      retry: QUERY_CONFIG.RETRY.NONE,
+      retry: 2,
     }
   )();
 }

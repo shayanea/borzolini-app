@@ -1,16 +1,16 @@
-import {
-  KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Link } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { AuthField } from '@/features/auth/components/auth-field';
 import { useRegisterForm } from '@/features/auth/hooks/use-register';
+import { Ionicons } from '@expo/vector-icons';
+import { Link } from 'expo-router';
+import {
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RegisterScreen() {
   const {
@@ -34,7 +34,7 @@ export default function RegisterScreen() {
             keyboardShouldPersistTaps="handled"
           >
             <View className="bg-[#1f1f24] rounded-3xl p-8 shadow-xl mx-2">
-              <Text className="text-3xl font-bold text-center text-blue-400 mb-2 leading-tight">
+              <Text className="text-3xl font-bold text-center text-primary mb-2 leading-tight">
                 Sign Up
               </Text>
               <Text className="text-center text-secondary-400 text-base mb-8">
@@ -101,7 +101,7 @@ export default function RegisterScreen() {
               />
 
               <TouchableOpacity
-                className="w-full bg-orange-500 py-4 rounded-full mb-6 shadow-lg shadow-orange-500/30 active:bg-orange-600"
+                className="w-full bg-primary py-4 rounded-full mb-6 shadow-lg shadow-primary/30 active:opacity-90"
                 onPress={handleRegister}
                 disabled={isRegistering}
               >
@@ -116,7 +116,7 @@ export default function RegisterScreen() {
                 </Text>
                 <Link href="/(auth)/login" asChild>
                   <TouchableOpacity>
-                    <Text className="text-blue-400 font-bold text-sm">Log In</Text>
+                    <Text className="text-primary font-bold text-sm">Log In</Text>
                   </TouchableOpacity>
                 </Link>
               </View>

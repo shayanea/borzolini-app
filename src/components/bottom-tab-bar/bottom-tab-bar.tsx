@@ -1,8 +1,8 @@
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import React from 'react';
-import type { Tabs } from 'expo-router';
 import { appTheme } from '@/constants/theme';
+import type { Tabs } from 'expo-router';
+import React from 'react';
 
 type TabsTabBarProps = Parameters<
   NonNullable<React.ComponentProps<typeof Tabs>['tabBar']>
@@ -30,7 +30,6 @@ export function BottomTabBar({
             const { options } = descriptors[route.key];
             const isFocused = state.index === index;
             const isMiddle = index === 2; // Assuming 5 tabs, index 2 is the middle one
-            console.log(options);
 
             const onPress = () => {
               const event = navigation.emit({
@@ -83,7 +82,7 @@ export function BottomTabBar({
                 accessibilityLabel={options.tabBarAccessibilityLabel}
                 onPress={onPress}
                 onLongPress={onLongPress}
-                className="items-center justify-center py-2 px-4 bg-white"
+                className="items-center justify-center py-2 px-4"
                 activeOpacity={0.7}
               >
                 {options.tabBarIcon?.({

@@ -8,7 +8,7 @@ export interface TabBarIconProps {
   size?: number;
 }
 
-export function TabBarIcon({  icon, color, size = 24 }: TabBarIconProps) {
+export function TabBarIcon({ icon, color, size = 24 }: TabBarIconProps) {
   return (
     <Image
       source={icon}
