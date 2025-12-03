@@ -69,7 +69,7 @@ function ServiceItem({
           <Text className="text-[#1fadad] text-xs font-medium">{distance}</Text>
         </View>
       </View>
-      {!isLast && <View className="h-px bg-white/10" />}
+      {!isLast && <View className="h-px bg-white/5" />}
     </>
   );
 }
@@ -140,5 +140,3 @@ export function NearbyServicesSection(): JSX.Element | null {
     </View>
   );
 }
-
-

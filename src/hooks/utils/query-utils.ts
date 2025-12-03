@@ -22,6 +22,8 @@ export const QUERY_KEYS = {
     all: ['breeds'] as const,
     list: () => [...QUERY_KEYS.breeds.all, 'list'] as const,
 		detail: (id: string) => [...QUERY_KEYS.breeds.all, 'detail', id] as const,
+    popular: (species: string, limit?: number) =>
+      [...QUERY_KEYS.breeds.all, 'popular', species, limit ?? 8] as const,
   },
   adoptionLocations: {
     all: ['adoption-locations'] as const,

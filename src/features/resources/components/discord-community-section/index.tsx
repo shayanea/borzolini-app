@@ -24,13 +24,15 @@ export function DiscordCommunitySection(): JSX.Element | null {
     return null;
   }
 
-  const resource: Resource = data[0];
+  const resourcesToShow = data.slice(0, 3);
 
-  const handlePress = (): void => {
-    void Linking.openURL(resource.url);
+  const handlePress = (url: string): void => {
+    void Linking.openURL(url);
   };
 
-  const initial = resource.title?.charAt(0).toUpperCase() ?? 'D';
+  const getInitial = (title?: string): string => {
+    return title?.charAt(0).toUpperCase() ?? 'D';
+  };
 
   return (
     <View className="mt-8">
@@ -40,40 +42,43 @@ export function DiscordCommunitySection(): JSX.Element | null {
         <Text className="text-white font-bold text-sm ml-2">Community</Text>
       </View>
 
-      {/* Card */}
-      <Card className=" border-white/10 px-4 py-3">
-        <TouchableOpacity
-          onPress={handlePress}
-          activeOpacity={0.85}
-          className="flex-row items-center justify-between"
+      {/* Cards */}
+      {resourcesToShow.map((resource: Resource, index: number) => (
+        <Card
+          key={resource.id}
+          className={`border-white/10 px-4 py-3 ${index > 0 ? 'mt-3' : ''}`}
         >
-          {/* Left: avatar + text */}
-          <View className="flex-row items-center flex-1">
-            <View className="w-9 h-9 rounded-full bg-[#4f46e5] items-center justify-center mr-3">
-              <Text className="text-white font-semibold text-sm">
-                {initial}
-              </Text>
+          <TouchableOpacity
+            onPress={() => handlePress(resource.url)}
+            activeOpacity={0.85}
+            className="flex-row items-center justify-between"
+          >
+            {/* Left: avatar + text */}
+            <View className="flex-row items-center flex-1">
+              <View className="w-9 h-9 rounded-full bg-[#4f46e5] items-center justify-center mr-3">
+                <Text className="text-white font-semibold text-sm">
+                  {getInitial(resource.title)}
+                </Text>
+              </View>
+
+              <View className="flex-1">
+                <Text
+                  className="text-white text-sm font-semibold"
+                  numberOfLines={1}
+                >
+                  {resource.title}
+                </Text>
+                <Text className="text-gray-400 text-xs" numberOfLines={1}>
+                  {resource.description ?? 'Join 12k+ pet owners'}
+                </Text>
+              </View>
             </View>
 
-            <View className="flex-1">
-              <Text
-                className="text-white text-sm font-semibold"
-                numberOfLines={1}
-              >
-                {resource.title}
-              </Text>
-              <Text className="text-gray-400 text-xs" numberOfLines={1}>
-                {resource.description ?? 'Join 12k+ pet owners'}
-              </Text>
-            </View>
-          </View>
-
-          {/* Right: external icon */}
-          <Ionicons name="open-outline" size={16} color="#9ca3af" />
-        </TouchableOpacity>
-      </Card>
+            {/* Right: external icon */}
+            <Ionicons name="open-outline" size={16} color="#9ca3af" />
+          </TouchableOpacity>
+        </Card>
+      ))}
     </View>
   );
 }
-
-

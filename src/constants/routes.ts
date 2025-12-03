@@ -10,5 +10,6 @@ export const ROUTES = {
   PETS: '/pets',
   TRAINING: '/training',
   RESOURCES: '/resources',
+  BREED_WIKI: '/breed-wiki',
 };
 
