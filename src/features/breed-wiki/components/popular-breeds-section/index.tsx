@@ -1,16 +1,17 @@
 import {
-  ActivityIndicator,
-  Image,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Image,
+    ScrollView,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
+import { usePopularCatBreeds } from '@/services/breeds';
 import { Breed } from '@/types/pet';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { usePopularCatBreeds } from '@/services/breeds';
+import { useRouter } from 'expo-router';
 
 export function PopularBreedsSection(): JSX.Element | null {
   const { data, isLoading, isError } = usePopularCatBreeds(8);
@@ -65,8 +66,14 @@ interface BreedCardProps {
 }
 
 function BreedCard({ breed }: BreedCardProps): JSX.Element {
+  const router = useRouter();
+
   return (
-    <TouchableOpacity activeOpacity={0.85} className="mr-4 w-40">
+    <TouchableOpacity 
+      activeOpacity={0.85} 
+      className="mr-4 w-40"
+      onPress={() => router.push(`/breed-detail/${breed.id}`)}
+    >
       <View className="w-full aspect-[4/5] rounded-2xl overflow-hidden bg-[#232328] relative">
         {breed.image_url ? (
           <Image

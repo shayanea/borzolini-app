@@ -1,16 +1,17 @@
-import {
-  ActivityIndicator,
-  Image,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
 import { Breed, BreedsBySpecies } from '@/types/pet';
+import {
+    ActivityIndicator,
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+} from 'react-native';
 
+import { useBreeds } from '@/services/breeds';
+import { PetSpecies } from '@/types/pet/pet-enums';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { PetSpecies } from '@/types/pet/pet-enums';
-import { useBreeds } from '@/services/breeds';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 
 const SPECIES_DISPLAY_NAMES: Record<PetSpecies, string> = {
@@ -197,8 +198,14 @@ interface BreedCardProps {
 }
 
 function BreedCard({ breed }: BreedCardProps): JSX.Element {
+  const router = useRouter();
+
   return (
-    <TouchableOpacity activeOpacity={0.85} className="w-[48%] mx-1 mb-3">
+    <TouchableOpacity 
+      activeOpacity={0.85} 
+      className="w-[48%] mx-1 mb-3"
+      onPress={() => router.push(`/breed-detail/${breed.id}`)}
+    >
       <View className="w-full aspect-[4/5] rounded-2xl overflow-hidden bg-[#232328] relative">
         {breed.image_url ? (
           <Image
@@ -230,3 +237,4 @@ function BreedCard({ breed }: BreedCardProps): JSX.Element {
     </TouchableOpacity>
   );
 }
+

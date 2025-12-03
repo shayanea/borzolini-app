@@ -1,5 +1,5 @@
 import { createStandardQueryHook, QUERY_KEYS } from '@/hooks/utils';
-import { BreedsResponse, Breed } from '@/types/pet';
+import { Breed, BreedsResponse } from '@/types/pet';
 import { PetSpecies } from '@/types/pet/pet-enums';
 import { httpClient } from './http-client';
 
@@ -7,6 +7,8 @@ import { httpClient } from './http-client';
 const breedsApi = {
   getBreeds: (): Promise<BreedsResponse> =>
     httpClient.get<BreedsResponse>('/v1/breeds', 'Failed to get breeds'),
+  getBreedById: (id: string): Promise<Breed> =>
+    httpClient.get<Breed>(`/v1/breeds/${id}`, 'Failed to get breed details'),
 };
 
 // Helper function to get popular breeds by species
@@ -49,6 +51,18 @@ export function usePopularCatBreeds(limit: number = 8) {
       context: 'Popular cat breeds',
       errorMessage: 'Failed to load popular cat breeds',
       staleTime: 1000 * 60 * 15, // 15 minutes cache as requested
+    }
+  )();
+}
+
+export function useBreedById(id: string) {
+  return createStandardQueryHook(
+    QUERY_KEYS.breeds.detail(id),
+    () => breedsApi.getBreedById(id),
+    {
+      context: 'Breed detail',
+      errorMessage: 'Failed to load breed details',
+      staleTime: 1000 * 60 * 30, // 30 minutes
     }
   )();
 }

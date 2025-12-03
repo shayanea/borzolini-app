@@ -11,5 +11,6 @@ export const ROUTES = {
   TRAINING: '/training',
   RESOURCES: '/resources',
   BREED_WIKI: '/breed-wiki',
+  BREED_DETAIL: (id: string) => `/breed-detail/${id}`,
 };
 
