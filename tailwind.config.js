@@ -29,6 +29,41 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    /**
+     * Custom utilities for NativeWind
+     * `glass-card` reproduces frosted-glass effect with border, shadow and smooth transition.
+     */
+    require('tailwindcss/plugin')(function ({ addUtilities, theme }) {
+      addUtilities(
+        {
+          '.glass-card': {
+            /* shape */
+            borderRadius: theme('borderRadius.2xl'),
+            overflow: 'hidden',
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.1)',
+
+            /* transition */
+            transitionProperty: theme('transitionProperty.colors'),
+            transitionDuration: theme('transitionDuration.DEFAULT'),
+            transitionTimingFunction: theme('transitionTimingFunction.DEFAULT'),
+
+            /* shadow */
+            shadowColor: '#000',
+            shadowOpacity: 0.15,
+            shadowRadius: 10,
+            shadowOffset: { width: 0, height: 6 },
+
+            /* backdrop / blur */
+            backdropFilter: 'blur(12px) saturate(1.5) brightness(1.05)',
+          },
+        },
+        {
+          layer: 'utilities',
+        },
+      );
+    }),
+  ],
 };
 

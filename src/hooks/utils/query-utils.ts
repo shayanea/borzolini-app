@@ -32,6 +32,13 @@ export const QUERY_KEYS = {
     all: ['user'] as const,
     profile: () => [...QUERY_KEYS.user.all, 'profile'] as const,
   },
+  resources: {
+    all: ['resources'] as const,
+    active: (search?: string) =>
+      [...QUERY_KEYS.resources.all, 'active', search ?? ''] as const,
+    byType: (type: string) =>
+      [...QUERY_KEYS.resources.all, 'by-type', type] as const,
+  },
 };
 
 // Configuration for React Query

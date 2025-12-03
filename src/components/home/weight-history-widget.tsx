@@ -122,7 +122,7 @@ export function WeightHistoryWidget(): JSX.Element {
   }, [lineSegments, chartHeight]);
 
   return (
-    <View className="mt-6">
+    <View className="mt-8">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center">
@@ -137,7 +137,7 @@ export function WeightHistoryWidget(): JSX.Element {
       </View>
 
       {/* Card */}
-      <Card className=" border border-white/5 px-4 pt-4 pb-5">
+      <Card className=" border border-white/5 px-4 pt-6 pb-5">
         {/* Y-axis labels */}
         <View className="absolute left-4 top-6 bottom-10 justify-between">
           <Text className="text-xs text-gray-500">{MAX_WEIGHT}</Text>

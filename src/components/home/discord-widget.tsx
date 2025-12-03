@@ -1,6 +1,7 @@
+import { Image, Text, TouchableOpacity, View } from 'react-native';
+
 import { Card } from '@/components/ui/card';
 import { Ionicons } from '@expo/vector-icons';
-import { Image, Text, TouchableOpacity, View } from 'react-native';
 // Importing icon statically to avoid `require()` usage which is disallowed by ESLint
 import communityIcon from '../../../assets/icons/community.png';
 
@@ -25,7 +26,7 @@ export function DiscordWidget() {
               source={communityIcon}
               className="w-7 h-7"
               resizeMode="contain"
-							tintColor={'#fff'}
+              tintColor={'#fff'}
             />
           </View>
 
@@ -41,7 +42,11 @@ export function DiscordWidget() {
         </View>
 
         {/* Right Arrow */}
-        <Ionicons name="chevron-forward" size={20} color="rgba(255,255,255,0.8)" />
+        <Ionicons
+          name="chevron-forward"
+          size={20}
+          color="rgba(255,255,255,0.8)"
+        />
       </TouchableOpacity>
     </Card>
   );

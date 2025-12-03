@@ -19,7 +19,7 @@ export default function HomeScreen() {
     <SafeAreaView className="flex-1 bg-[#17171c]">
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-6 py-6"
+        contentContainerClassName="px-6 pt-6 pb-28"
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}

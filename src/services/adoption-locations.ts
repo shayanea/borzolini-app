@@ -84,7 +84,7 @@ export function useAdoptionLocations(filters?: AdoptionLocationFilters) {
     {
       context: 'Adoption Locations',
       errorMessage: 'Failed to load adoption locations',
-      staleTime: 1000 * 60 * 5, // 5 minutes
+      staleTime: 1000 * 60 * 60, // 1 hour
       enabled: isValid, // Only run query when we have valid coordinates
     }
   )();

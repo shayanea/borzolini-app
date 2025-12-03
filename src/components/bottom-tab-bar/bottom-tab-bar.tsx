@@ -1,11 +1,11 @@
+import React, { ComponentProps } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 
-import { appTheme } from '@/constants/theme';
 import type { Tabs } from 'expo-router';
-import React from 'react';
+import { appTheme } from '@/constants/theme';
 
 type TabsTabBarProps = Parameters<
-  NonNullable<React.ComponentProps<typeof Tabs>['tabBar']>
+  NonNullable<ComponentProps<typeof Tabs>['tabBar']>
 >[0];
 
 interface BottomTabBarProps {

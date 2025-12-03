@@ -5,8 +5,13 @@ class ResourcesService {
   /**
    * Get all active resources
    */
-  async getActiveResources(): Promise<Resource[]> {
-    const response = await httpClient.get<Resource[]>('/v1/resources');
+  async getActiveResources(search?: string): Promise<Resource[]> {
+    const url =
+      search && search.trim().length > 0
+        ? `/v1/resources?search=${encodeURIComponent(search.trim())}`
+        : '/v1/resources';
+
+    const response = await httpClient.get<Resource[]>(url);
     return response;
   }
 

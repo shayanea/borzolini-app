@@ -1,18 +1,18 @@
 import * as Location from 'expo-location';
 
-import { LeafletMap } from '@/components/ui/leaflet-map';
-import React, { useState } from 'react';
 import {
-    ActivityIndicator,
-    Linking,
-    Text,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Linking,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import React, { useState } from 'react';
 
-import { useAdoptionLocations } from '@/services/adoption-locations';
-import { PetSpecies } from '@/types/pet/pet-enums';
 import { Ionicons } from '@expo/vector-icons';
+import { LeafletMap } from '@/components/ui/leaflet-map';
+import { PetSpecies } from '@/types/pet/pet-enums';
+import { useAdoptionLocations } from '@/services/adoption-locations';
 
 interface AdoptionMapStepProps {
   selectedSpecies?: PetSpecies;
@@ -30,7 +30,6 @@ export function AdoptionMapStep({
   const [locationPermission, setLocationPermission] = useState<boolean>(true);
   const [locationError, setLocationError] = useState<string | null>(null);
   const [isGettingLocation, setIsGettingLocation] = useState<boolean>(false);
-
 
   // Fetch adoption locations based on selected species, breeds, and user location
   const {
@@ -56,8 +55,6 @@ export function AdoptionMapStep({
         }
       : undefined
   );
-
-  console.log(locationsData);
 
   // useEffect(() => {
   //   (async () => {
