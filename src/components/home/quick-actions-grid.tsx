@@ -1,26 +1,29 @@
-import { BlurView } from 'expo-blur';
 import {
   Image,
+  ImageSourcePropType,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ImageSourcePropType,
 } from 'react-native';
 
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 // Static icon imports to comply with ESLint no-require-imports rule
+import adoptIcon from '../../../assets/icons/adopt.png';
+import clinicsIcon from '../../../assets/icons/clinics.png';
 import houseIcon from '../../../assets/icons/house.png';
 import wikiIcon from '../../../assets/icons/wiki.png';
-import clinicsIcon from '../../../assets/icons/clinics.png';
-import adoptIcon from '../../../assets/icons/adopt.png';
 
 interface QuickAction {
   id: string;
   title: string;
   subtitle: string;
   icon: ImageSourcePropType;
+  titleColor: string;
   backgroundColor: string;
   iconBackgroundColor: string;
-	iconColor: string;
+  iconColor: string;
   onPress: () => void;
 }
 
@@ -30,8 +33,9 @@ const quickActions: QuickAction[] = [
     title: 'Pet Hosting',
     subtitle: 'Find a sitter nearby',
     icon: houseIcon,
-		iconColor: '#7c3aed',
-    backgroundColor: 'rgba(124, 58, 237, 0.15)', 
+    iconColor: '#7c3aed',
+    titleColor: '#c4b5fd',
+    backgroundColor: 'rgba(124, 58, 237, 0.15)',
     iconBackgroundColor: '#7c3aed20',
     onPress: () => console.log('Pet Hosting pressed'),
   },
@@ -39,10 +43,11 @@ const quickActions: QuickAction[] = [
     id: 'breed-wiki',
     title: 'Breed Wiki',
     subtitle: 'Learn about breeds',
-    icon: wikiIcon,	
-		iconColor: "#c2410c",
-    backgroundColor: 'rgba(194, 65, 12, 0.15)', 
-    iconBackgroundColor: '#c2410c20',
+    icon: wikiIcon,
+    iconColor: '#ea580c', // vivid orange for icon
+    titleColor: '#fed7aa', // soft orange for title
+    backgroundColor: 'rgba(234, 88, 12, 0.2)', // more pronounced orange card background
+    iconBackgroundColor: '#ea580c20',
     onPress: () => console.log('Breed Wiki pressed'),
   },
   {
@@ -50,8 +55,9 @@ const quickActions: QuickAction[] = [
     title: 'Clinic Finder',
     subtitle: 'Locate nearby vets',
     icon: clinicsIcon,
-		iconColor: '#2563eb',	
-    backgroundColor: 'rgba(37, 99, 235, 0.15)', 
+    iconColor: '#2563eb',
+    titleColor: '#93c5fd',
+    backgroundColor: 'rgba(37, 99, 235, 0.15)',
     iconBackgroundColor: '#2563eb20',
     onPress: () => console.log('Clinic Finder pressed'),
   },
@@ -60,8 +66,9 @@ const quickActions: QuickAction[] = [
     title: 'Adopt',
     subtitle: 'Find a new friend',
     icon: adoptIcon,
-		iconColor: '#dc2626',
-    backgroundColor: 'rgba(220, 38, 38, 0.15)', 	
+    iconColor: '#dc2626',
+    titleColor: '#fecaca',
+    backgroundColor: 'rgba(220, 38, 38, 0.15)',
     iconBackgroundColor: '#dc262620',
     onPress: () => console.log('Adopt pressed'),
   },
@@ -70,20 +77,29 @@ const quickActions: QuickAction[] = [
 export function QuickActionsGrid() {
   return (
     <View className="flex-row flex-wrap gap-3">
-      {quickActions.map((action) => (
+      {quickActions.map(action => (
         <TouchableOpacity
           key={action.id}
           onPress={action.onPress}
           activeOpacity={0.7}
-          className="flex-1 min-w-[45%] rounded-2xl overflow-hidden border border-white/10"
+          className="glass-card flex-1 min-w-[45%] h-32"
         >
-          {/* Glassmorphism Blur Background */}
+          {/* Gradient + Blur background layers */}
+          <LinearGradient
+            colors={[action.backgroundColor, 'transparent']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+
           <BlurView
-            intensity={20}
+            intensity={30}
             tint="dark"
-            className="p-4"
-            style={{ backgroundColor: action.backgroundColor }}
-          >
+            style={StyleSheet.absoluteFill}
+          />
+
+          {/* Card padding & content wrapper */}
+          <View className="p-4 flex-1 justify-between">
             {/* Icon Container */}
             <View
               className="w-10 h-10 rounded-2xl items-center justify-center mb-3"
@@ -99,17 +115,15 @@ export function QuickActionsGrid() {
 
             {/* Text Content */}
             <View>
-              <Text 
+              <Text
                 className="text-base font-semibold mb-1"
-                style={{ color: action.iconColor }}
+                style={{ color: action.titleColor }}
               >
                 {action.title}
               </Text>
-              <Text className="text-gray-400 text-xs">
-                {action.subtitle}
-              </Text>
+              <Text className="text-gray-400 text-xs">{action.subtitle}</Text>
             </View>
-          </BlurView>
+          </View>
         </TouchableOpacity>
       ))}
     </View>
