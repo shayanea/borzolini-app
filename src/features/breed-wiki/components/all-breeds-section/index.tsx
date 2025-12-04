@@ -29,7 +29,7 @@ const SPECIES_DISPLAY_NAMES: Record<PetSpecies, string> = {
 const SPECIES_ICONS: Record<PetSpecies, keyof typeof Ionicons.glyphMap> = {
   [PetSpecies.DOG]: 'paw',
   [PetSpecies.CAT]: 'paw',
-  [PetSpecies.BIRD]: 'bird-outline' as keyof typeof Ionicons.glyphMap,
+  [PetSpecies.BIRD]: 'leaf-outline',
   [PetSpecies.RABBIT]: 'paw',
   [PetSpecies.HAMSTER]: 'paw',
   [PetSpecies.FISH]: 'fish',

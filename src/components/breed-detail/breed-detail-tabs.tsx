@@ -20,25 +20,24 @@ const tabs: Tab[] = [
 
 export function BreedDetailTabs({ activeTab, onTabChange }: BreedDetailTabsProps) {
   return (
-    <View className="flex-row border-b border-white/5 px-6">
+    <View className="flex-row bg-[#232328] rounded-full mx-6 p-1">
       {tabs.map((tab) => {
         const isActive = activeTab === tab.key;
         return (
           <TouchableOpacity
             key={tab.key}
             onPress={() => onTabChange(tab.key)}
-            className="flex-1 items-center py-4"
+            className={`flex-1 items-center py-3 rounded-full ${
+              isActive ? 'bg-[#17171c]' : ''
+            }`}
           >
             <Text 
-              className={`text-base font-medium ${
+              className={`text-sm font-medium ${
                 isActive ? 'text-white' : 'text-white/40'
               }`}
             >
               {tab.title}
             </Text>
-            {isActive && (
-              <View className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#9c5cf6]" />
-            )}
           </TouchableOpacity>
         );
       })}

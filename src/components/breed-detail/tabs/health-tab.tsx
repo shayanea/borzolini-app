@@ -37,41 +37,37 @@ export function HealthTab({ breed }: HealthTabProps) {
   const facts = generateFacts(breed);
 
   return (
-    <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
       {/* Common Health Issues */}
-      <View className="mb-6">
-        <View className="flex-row items-center mb-3">
-          <Ionicons name="medical" size={20} color="#ef4444" />
-          <Text className="text-white text-lg font-semibold ml-2">Common Health Issues</Text>
+      <View className="bg-[#232328] rounded-2xl p-4 mb-4">
+        <View className="flex-row items-center mb-4">
+          <Text className="text-lg">✈️</Text>
+          <Text className="text-white text-base font-semibold ml-2">Common Health Issues</Text>
         </View>
-        <View className="bg-[#232328] border border-white/10 rounded-2xl p-4">
-          {healthIssues.length > 0 ? (
-            healthIssues.map((issue, index) => (
-              <View key={index} className="flex-row mb-2 last:mb-0">
-                <Text className="text-[#ef4444] mr-2">•</Text>
-                <Text className="text-white/70 flex-1">{issue}</Text>
-              </View>
-            ))
-          ) : (
-            <Text className="text-white/50 italic">No common health issues reported</Text>
-          )}
-        </View>
+        {healthIssues.length > 0 ? (
+          healthIssues.map((issue, index) => (
+            <View key={index} className="flex-row items-start mb-2">
+              <Text className="text-[#9c5cf6] mr-3 text-xs mt-1">●</Text>
+              <Text className="text-white/60 text-sm flex-1">{issue}</Text>
+            </View>
+          ))
+        ) : (
+          <Text className="text-white/50 text-sm italic">No common health issues reported</Text>
+        )}
       </View>
 
       {/* Did you know? */}
       {facts.length > 0 && (
-        <View className="mb-6">
-          <View className="flex-row items-center mb-3">
-            <Ionicons name="bulb" size={20} color="#3b82f6" />
-            <Text className="text-white text-lg font-semibold ml-2">Did you know?</Text>
+        <View className="bg-[#232328] rounded-2xl p-4 mb-4">
+          <View className="flex-row items-center mb-4">
+            <Ionicons name="globe-outline" size={18} color="#3b82f6" />
+            <Text className="text-[#3b82f6] text-base font-semibold ml-2">Did you know?</Text>
           </View>
-          <View className="bg-[#232328] border border-white/10 rounded-2xl p-4">
-            {facts.map((fact, index) => (
-              <View key={index} className="mb-3 last:mb-0">
-                <Text className="text-white/70 italic leading-6">"{fact}"</Text>
-              </View>
-            ))}
-          </View>
+          {facts.map((fact, index) => (
+            <View key={index} className={index < facts.length - 1 ? 'mb-3' : ''}>
+              <Text className="text-white/60 text-sm italic leading-5">"{fact}"</Text>
+            </View>
+          ))}
         </View>
       )}
     </ScrollView>

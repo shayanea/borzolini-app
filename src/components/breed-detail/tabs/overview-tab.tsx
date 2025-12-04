@@ -1,4 +1,5 @@
 import { Breed } from '@/types/pet';
+import { Ionicons } from '@expo/vector-icons';
 import { ScrollView, Text, View } from 'react-native';
 import { InfoCard } from '../info-card';
 
@@ -13,32 +14,32 @@ export function OverviewTab({ breed }: OverviewTabProps) {
     : [];
 
   return (
-    <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
+    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
       {/* About Section */}
-      <View className="mb-6">
+      <View className="bg-[#232328] rounded-2xl p-4 mb-4">
         <View className="flex-row items-center mb-3">
-          <View className="w-1 h-6 bg-[#9c5cf6] rounded-full mr-3" />
-          <Text className="text-white text-lg font-semibold">About</Text>
+          <Ionicons name="information-circle-outline" size={20} color="#fff" />
+          <Text className="text-white text-base font-semibold ml-2">About</Text>
         </View>
-        <Text className="text-white/70 text-base leading-6">
+        <Text className="text-white/60 text-sm leading-5">
           {breed.description || 'No description available for this breed.'}
         </Text>
       </View>
 
       {/* Temperament Section */}
       {temperamentTraits.length > 0 && (
-        <View className="mb-6">
+        <View className="bg-[#232328] rounded-2xl p-4 mb-4">
           <View className="flex-row items-center mb-3">
-            <View className="w-1 h-6 bg-[#9c5cf6] rounded-full mr-3" />
-            <Text className="text-white text-lg font-semibold">Temperament</Text>
+            <Text className="text-lg">✨</Text>
+            <Text className="text-white text-base font-semibold ml-2">Temperament</Text>
           </View>
           <View className="flex-row flex-wrap gap-2">
             {temperamentTraits.map((trait, index) => (
               <View 
                 key={index} 
-                className="bg-white/10 px-4 py-2 rounded-full border border-white/20"
+                className="bg-[#17171c] px-3 py-2 rounded-full border border-white/10"
               >
-                <Text className="text-white text-sm">{trait}</Text>
+                <Text className="text-white text-xs">{trait}</Text>
               </View>
             ))}
           </View>
@@ -53,7 +54,7 @@ export function OverviewTab({ breed }: OverviewTabProps) {
           value={`${breed.weight_min}-${breed.weight_max} pounds`}
         />
         <InfoCard
-          icon="heart-outline"
+          icon="time-outline"
           label="Lifespan"
           value={`${breed.life_expectancy_min}-${breed.life_expectancy_max} years`}
         />

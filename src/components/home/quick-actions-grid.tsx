@@ -1,10 +1,10 @@
 import {
-  Image,
-  ImageSourcePropType,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    Image,
+    ImageSourcePropType,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 
 import { BlurView } from 'expo-blur';
@@ -25,6 +25,7 @@ interface QuickAction {
   backgroundColor: string;
   iconBackgroundColor: string;
   iconColor: string;
+  tag?: string;
   onPress: () => void;
 }
 
@@ -41,6 +42,7 @@ export function QuickActionsGrid() {
       titleColor: '#c4b5fd',
       backgroundColor: 'rgba(124, 58, 237, 0.15)',
       iconBackgroundColor: '#7c3aed20',
+      tag: 'Soon',
       onPress: () => console.log('Pet Hosting pressed'),
     },
     {
@@ -102,7 +104,16 @@ export function QuickActionsGrid() {
           />
 
           {/* Card padding & content wrapper */}
-          <View className="p-4 flex-1 justify-between">
+          <View className="p-4 flex-1 justify-between relative">
+            {/* Tag */}
+            {action.tag && (
+              <View className="absolute top-0 right-0 bg-white/10 px-2 py-1 rounded-bl-xl rounded-tr-xl border-l border-b border-white/5">
+                <Text className="text-white/80 text-[10px] font-bold tracking-wider uppercase">
+                  {action.tag}
+                </Text>
+              </View>
+            )}
+
             {/* Icon Container */}
             <View
               className="w-10 h-10 rounded-2xl items-center justify-center mb-3"

@@ -1,5 +1,5 @@
 import { Breed, ExerciseNeeds, GroomingNeeds } from '@/types/pet';
-import { ScrollView } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { ProgressBar } from '../progress-bar';
 
 interface StatsTabProps {
@@ -35,11 +35,13 @@ export function StatsTab({ breed }: StatsTabProps) {
   const groomingNeeds = needsToPercentage(breed.grooming_needs);
 
   return (
-    <ScrollView className="flex-1 px-6 py-4" showsVerticalScrollIndicator={false}>
-      <ProgressBar label="Energy Level" percentage={energyLevel} />
-      <ProgressBar label="Affectionate" percentage={affectionate} />
-      <ProgressBar label="Trainability" percentage={trainability} />
-      <ProgressBar label="Grooming Needs" percentage={groomingNeeds} />
+    <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+      <View className="bg-[#232328] rounded-2xl p-4">
+        <ProgressBar label="Energy Level" percentage={energyLevel} />
+        <ProgressBar label="Affectionate" percentage={affectionate} />
+        <ProgressBar label="Trainability" percentage={trainability} />
+        <ProgressBar label="Grooming Needs" percentage={groomingNeeds} isLast />
+      </View>
     </ScrollView>
   );
 }
