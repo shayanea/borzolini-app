@@ -1,8 +1,8 @@
 import {
-	QueryKey,
-	useMutation,
-	useQuery,
-	useQueryClient,
+    QueryKey,
+    useMutation,
+    useQuery,
+    useQueryClient,
 } from '@tanstack/react-query';
 
 // Query Key Factory
@@ -40,6 +40,10 @@ export const QUERY_KEYS = {
       [...QUERY_KEYS.resources.all, 'active', search ?? ''] as const,
     byType: (type: string) =>
       [...QUERY_KEYS.resources.all, 'by-type', type] as const,
+  },
+  aiVision: {
+    all: ['ai-vision'] as const,
+    analysis: (petId: string) => [...QUERY_KEYS.aiVision.all, 'analysis', petId] as const,
   },
 };
 
