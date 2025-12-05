@@ -1,5 +1,5 @@
-import { Image, LayoutChangeEvent, Text, View } from 'react-native';
 import { useMemo, useState } from 'react';
+import { Image, LayoutChangeEvent, Text, View } from 'react-native';
 
 import { Card } from '@/components/ui/card';
 import weightHistoryIcon from '../../../assets/icons/scales.png';
@@ -130,7 +130,7 @@ export function WeightHistoryWidget(): JSX.Element {
             source={weightHistoryIcon}
             className="w-5 h-5 mr-2"
             resizeMode="contain"
-            tintColor="#ff8904"
+            style={{ tintColor: '#ff8904' }}
           />
           <Text className="text-white font-bold text-lg">Weight History</Text>
         </View>

@@ -17,7 +17,7 @@ export function ScanHeader({ petName = 'Bailey' }: ScanHeaderProps) {
             source={scanIcon}
             className="w-5 h-5"
             resizeMode="contain"
-            tintColor="#c084fc"
+            style={{ tintColor: '#c084fc' }}
           />
         </View>
         <MaskedView

@@ -1,34 +1,141 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  RefreshControl,
-  ScrollView,
-  Text,
-  View,
+    ActivityIndicator,
+    RefreshControl,
+    ScrollView,
+    Text,
+    View,
 } from 'react-native';
 import { trainingService } from '../services/training.service';
-import { DailyTrainingAssignment, TrainingActivity } from '../types';
-import { ActivityCard } from './activity-card';
-import { ActivityDetail } from './activity-detail';
+import {
+    ActivityDifficulty,
+    ModuleDetailResponse,
+    ModuleWithProgress,
+    PetSpecies,
+    UserLevel,
+    WeeklyChallenge,
+} from '../types';
+import { ChallengeModal } from './challenge-modal';
+import { TrainingDetailModal } from './training-detail-modal';
+import { TrainingHeader } from './training-header';
+import { TrainingModuleCard } from './training-module-card';
+import { WeeklyChallengeBanner } from './weekly-challenge-banner';
+
+// Mock data for demo when API is not available
+const mockModules: ModuleWithProgress[] = [
+  {
+    id: '1',
+    title: 'Basic Obedience',
+    description: 'Sit, Stay, Come, and Heel basics.',
+    thumbnail_url: null,
+    duration_minutes: 15,
+    difficulty: ActivityDifficulty.EASY,
+    category: 'obedience',
+    species: PetSpecies.DOG,
+    is_active: true,
+    created_at: '',
+    updated_at: '',
+    user_progress: {
+      id: 'p1',
+      user_id: 'u1',
+      module_id: '1',
+      started_at: '',
+      progress_percentage: 60,
+      completed_steps: [],
+    },
+  },
+  {
+    id: '2',
+    title: 'Agility Starter',
+    description: 'Introduction to jumps and tunnels.',
+    thumbnail_url: null,
+    duration_minutes: 20,
+    difficulty: ActivityDifficulty.MODERATE,
+    category: 'agility',
+    species: PetSpecies.DOG,
+    is_active: true,
+    created_at: '',
+    updated_at: '',
+    user_progress: {
+      id: 'p2',
+      user_id: 'u1',
+      module_id: '2',
+      started_at: '',
+      progress_percentage: 25,
+      completed_steps: [],
+    },
+  },
+  {
+    id: '3',
+    title: 'Advanced Tricks',
+    description: 'Spin, Play Dead, and Bow.',
+    thumbnail_url: null,
+    duration_minutes: 25,
+    difficulty: ActivityDifficulty.ADVANCED,
+    category: 'tricks',
+    species: PetSpecies.DOG,
+    is_active: true,
+    created_at: '',
+    updated_at: '',
+    user_progress: null,
+  },
+  {
+    id: '4',
+    title: 'Leash Mastery',
+    description: 'Perfect loose leash walking.',
+    thumbnail_url: null,
+    duration_minutes: 10,
+    difficulty: ActivityDifficulty.EASY,
+    category: 'walking',
+    species: PetSpecies.DOG,
+    is_active: true,
+    created_at: '',
+    updated_at: '',
+    user_progress: null,
+  },
+];
 
 export function TrainingDashboard() {
-  const [assignments, setAssignments] = useState<DailyTrainingAssignment[]>([]);
+  const [modules, setModules] = useState<ModuleWithProgress[]>([]);
+  const [userLevel, setUserLevel] = useState<UserLevel | null>(null);
+  const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedActivity, setSelectedActivity] =
-    useState<TrainingActivity | null>(null);
-  const [selectedAssignmentId, setSelectedAssignmentId] = useState<
-    string | null
-  >(null);
-  const [completing, setCompleting] = useState(false);
 
-  const fetchAssignments = useCallback(async () => {
+  // Modal states
+  const [showChallengeModal, setShowChallengeModal] = useState(false);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedModuleDetail, setSelectedModuleDetail] = useState<ModuleDetailResponse | null>(null);
+  const [acceptingChallenge, setAcceptingChallenge] = useState(false);
+
+  const fetchData = useCallback(async () => {
     try {
-      const data = await trainingService.getTodayAssignments();
-      setAssignments(data);
+      // Try to fetch from API, fall back to mock data
+      const [modulesData, profileData, challengeData] = await Promise.allSettled([
+        trainingService.getModulesWithProgress(),
+        trainingService.getUserProfile(),
+        trainingService.getActiveChallenge(),
+      ]);
+
+      if (modulesData.status === 'fulfilled' && modulesData.value.length > 0) {
+        setModules(modulesData.value);
+      } else {
+        // Use mock data
+        setModules(mockModules);
+      }
+
+      if (profileData.status === 'fulfilled') {
+        setUserLevel(profileData.value.level);
+      }
+
+      if (challengeData.status === 'fulfilled') {
+        setChallenge(challengeData.value);
+      }
     } catch (error) {
-      console.error('Failed to fetch training assignments:', error);
+      console.error('Failed to fetch training data:', error);
+      // Fall back to mock data
+      setModules(mockModules);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -37,122 +144,139 @@ export function TrainingDashboard() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchAssignments();
-    }, [fetchAssignments])
+      fetchData();
+    }, [fetchData])
   );
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
-    fetchAssignments();
-  }, [fetchAssignments]);
+    fetchData();
+  }, [fetchData]);
 
-  const handleActivityPress = (assignment: DailyTrainingAssignment) => {
-    if (!assignment.is_completed) {
-      setSelectedActivity(assignment.activity);
-      setSelectedAssignmentId(assignment.id);
-    }
-  };
-
-  const handleComplete = async (notes?: string) => {
-    if (!selectedAssignmentId) return;
-
+  const handleModulePress = async (module: ModuleWithProgress) => {
     try {
-      setCompleting(true);
-      await trainingService.completeAssignment(selectedAssignmentId, { notes });
-      setSelectedActivity(null);
-      setSelectedAssignmentId(null);
-      fetchAssignments();
+      const detail = await trainingService.getModuleById(module.id);
+      setSelectedModuleDetail(detail);
+    } catch {
+      // Use mock detail with the selected module
+      setSelectedModuleDetail({
+        module,
+        steps: [],
+        user_progress: module.user_progress,
+        final_challenge: null,
+      });
+    }
+    setShowDetailModal(true);
+  };
+
+  const handleAcceptChallenge = async () => {
+    if (!challenge) return;
+    setAcceptingChallenge(true);
+    try {
+      await trainingService.acceptChallenge(challenge.id);
+      setShowChallengeModal(false);
+      fetchData();
     } catch (error) {
-      console.error('Failed to complete assignment:', error);
+      console.error('Failed to accept challenge:', error);
     } finally {
-      setCompleting(false);
+      setAcceptingChallenge(false);
     }
   };
 
-  const pendingAssignments = assignments.filter(a => !a.is_completed);
-  const completedAssignments = assignments.filter(a => a.is_completed);
+  // Split modules into in-progress and upcoming
+  const inProgressModules = modules.filter(
+    (m) => m.user_progress && m.user_progress.progress_percentage > 0 && m.user_progress.progress_percentage < 100
+  );
+  const upcomingModules = modules.filter(
+    (m) => !m.user_progress || m.user_progress.progress_percentage === 0
+  );
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#fb8500" />
+      <View className="flex-1 justify-center items-center bg-[#17171c]">
+        <ActivityIndicator size="large" color="#9c5cf6" />
       </View>
     );
   }
 
   return (
-    <View className="flex-1">
+    <View className="flex-1 bg-[#17171c]">
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-6 py-6"
+        contentContainerClassName="px-5 py-6"
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            colors={['#fb8500']}
+            colors={['#9c5cf6']}
+            tintColor="#9c5cf6"
           />
         }
       >
-        <View className="mb-6">
-          <Text className="text-3xl font-bold text-white mb-2">
-            Today's Training
-          </Text>
-          <Text className="text-secondary-400">
-            {pendingAssignments.length > 0
-              ? `You have ${pendingAssignments.length} activities pending`
-              : 'All done for today! Great job!'}
-          </Text>
-        </View>
+        <TrainingHeader level={userLevel} />
 
-        {pendingAssignments.length > 0 && (
-          <View className="mb-8">
-            <Text className="text-lg font-semibold text-white mb-4">
-              To Do
-            </Text>
-            {pendingAssignments.map(assignment => (
-              <ActivityCard
-                key={assignment.id}
-                activity={assignment.activity}
-                onPress={() => handleActivityPress(assignment)}
+        <WeeklyChallengeBanner
+          challenge={challenge}
+          onStartChallenge={() => setShowChallengeModal(true)}
+        />
+
+        {/* In Progress Section */}
+        {inProgressModules.length > 0 && (
+          <View className="mb-6">
+            <Text className="text-white font-semibold text-lg mb-4">In Progress</Text>
+            {inProgressModules.map((module) => (
+              <TrainingModuleCard
+                key={module.id}
+                module={module}
+                onPress={() => handleModulePress(module)}
               />
             ))}
           </View>
         )}
 
-        {completedAssignments.length > 0 && (
-          <View>
-            <Text className="text-lg font-semibold text-white mb-4">
-              Completed
-            </Text>
-            {completedAssignments.map(assignment => (
-              <ActivityCard
-                key={assignment.id}
-                activity={assignment.activity}
-                onPress={() => {}} // Already completed
-                isCompleted
+        {/* Upcoming Modules Section */}
+        {upcomingModules.length > 0 && (
+          <View className="mb-6">
+            <Text className="text-white font-semibold text-lg mb-4">Upcoming Modules</Text>
+            {upcomingModules.map((module) => (
+              <TrainingModuleCard
+                key={module.id}
+                module={module}
+                onPress={() => handleModulePress(module)}
               />
             ))}
           </View>
         )}
 
-        {assignments.length === 0 && !loading && (
+        {/* Empty state */}
+        {modules.length === 0 && !loading && (
           <View className="bg-[#1f1f24] rounded-xl p-8 items-center justify-center shadow-sm">
             <Text className="text-lg font-semibold text-white mb-2">
-              No Assignments Yet
+              No Training Modules
             </Text>
-            <Text className="text-secondary-400 text-center">
-              Check back later for your daily training plan.
+            <Text className="text-[#94a3b8] text-center">
+              Check back later for available training modules.
             </Text>
           </View>
         )}
       </ScrollView>
 
-      <ActivityDetail
-        activity={selectedActivity}
-        visible={!!selectedActivity}
-        onClose={() => setSelectedActivity(null)}
-        onComplete={handleComplete}
-        isCompleting={completing}
+      {/* Modals */}
+      <ChallengeModal
+        visible={showChallengeModal}
+        challenge={challenge}
+        onClose={() => setShowChallengeModal(false)}
+        onAccept={handleAcceptChallenge}
+        isAccepting={acceptingChallenge}
+      />
+
+      <TrainingDetailModal
+        visible={showDetailModal}
+        moduleDetail={selectedModuleDetail}
+        onClose={() => {
+          setShowDetailModal(false);
+          setSelectedModuleDetail(null);
+        }}
       />
     </View>
   );

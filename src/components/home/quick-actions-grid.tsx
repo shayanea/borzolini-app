@@ -1,10 +1,10 @@
 import {
-    Image,
-    ImageSourcePropType,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
+	Image,
+	ImageSourcePropType,
+	StyleSheet,
+	Text,
+	TouchableOpacity,
+	View,
 } from 'react-native';
 
 import { BlurView } from 'expo-blur';
@@ -123,7 +123,7 @@ export function QuickActionsGrid() {
                 source={action.icon}
                 className="w-6 h-6"
                 resizeMode="contain"
-                tintColor={action.iconColor}
+                style={{ tintColor: action.iconColor }}
               />
             </View>
 

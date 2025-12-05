@@ -4,7 +4,6 @@ import { Card } from '@/components/ui/card';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React from 'react';
 import safetyIcon from '../../../../../assets/icons/safety.png';
 
 interface SafetyGuideCardProps {
@@ -71,7 +70,7 @@ export function SafetyGuidesSection(): JSX.Element {
           source={safetyIcon}
           className="w-6 h-6 mr-2"
           resizeMode="contain"
-          tintColor="#fb2c36"
+          style={{ tintColor: '#fb2c36' }}
         />
         <Text className="text-white font-bold text-base">Safety Guides</Text>
       </View>

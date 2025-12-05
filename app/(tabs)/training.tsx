@@ -3,7 +3,7 @@ import { TrainingDashboard } from '../../src/features/training/components/traini
 
 export default function TrainingScreen() {
   return (
-    <SafeAreaView className="flex-1 bg-[#E5E7EB]" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-[#17171c]" edges={['top']}>
       <TrainingDashboard />
     </SafeAreaView>
   );

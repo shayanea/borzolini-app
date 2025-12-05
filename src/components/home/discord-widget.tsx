@@ -2,7 +2,6 @@ import { Image, Text, TouchableOpacity, View } from 'react-native';
 
 import { Card } from '@/components/ui/card';
 import { Ionicons } from '@expo/vector-icons';
-// Importing icon statically to avoid `require()` usage which is disallowed by ESLint
 import communityIcon from '../../../assets/icons/community.png';
 
 export function DiscordWidget() {
@@ -26,7 +25,7 @@ export function DiscordWidget() {
               source={communityIcon}
               className="w-7 h-7"
               resizeMode="contain"
-              tintColor={'#fff'}
+              style={{ tintColor: '#fff' }}
             />
           </View>
 
