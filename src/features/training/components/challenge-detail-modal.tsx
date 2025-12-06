@@ -10,13 +10,18 @@ import {
   Text,
   View,
 } from 'react-native';
-import { ModuleDetailResponse, StepWithProgress } from '../types';
+import {
+  ChallengeStep,
+  UserChallengeProgress,
+  WeeklyChallenge,
+} from '../types';
 
-interface TrainingDetailModalProps {
+interface ChallengeDetailModalProps {
   visible: boolean;
-  moduleDetail?: ModuleDetailResponse | null;
+  challenge?: WeeklyChallenge | null;
+  progress?: UserChallengeProgress | null;
   onClose: () => void;
-  onStepPress?: (step: StepWithProgress) => void;
+  onStepPress?: (step: ChallengeStep) => void;
   isCompletingStep?: boolean;
 }
 
@@ -26,73 +31,25 @@ const styles = StyleSheet.create({
   },
 });
 
-// Mock data for demo
-const mockSteps: StepWithProgress[] = [
-  {
-    id: '1',
-    module_id: '1',
-    title: "Master the 'Sit' Command",
-    description: 'Dog sits on command without physical prompting.',
-    order: 1,
-    created_at: '',
-    updated_at: '',
-    is_completed: true,
-  },
-  {
-    id: '2',
-    module_id: '1',
-    title: "Hold 'Stay' for 10 seconds",
-    description: 'Dog remains in position while you walk away.',
-    order: 2,
-    created_at: '',
-    updated_at: '',
-    is_completed: true,
-  },
-  {
-    id: '3',
-    module_id: '1',
-    title: "Consistent 'Come' Recall",
-    description: 'Dog comes immediately when called from 10ft away.',
-    order: 3,
-    created_at: '',
-    updated_at: '',
-    is_completed: true,
-  },
-  {
-    id: '4',
-    module_id: '1',
-    title: 'Loose Leash Walking',
-    description: 'Walking without pulling for 5 minutes.',
-    order: 4,
-    created_at: '',
-    updated_at: '',
-    is_completed: false,
-  },
-];
-
-const mockFinalChallenge = {
-  title: 'Final Challenge: The Distraction Test',
-  description: 'Perform all commands in a busy park environment.',
-  reward_title: 'Obedience Master Badge',
-  is_locked: true,
-};
-
-export function TrainingDetailModal({
+export function ChallengeDetailModal({
   visible,
-  moduleDetail,
+  challenge,
+  progress,
   onClose,
   onStepPress,
   isCompletingStep = false,
-}: TrainingDetailModalProps) {
-  // Use mock data if no moduleDetail provided
-  const title = moduleDetail?.module?.title || 'Basic Obedience';
-  const subtitle =
-    moduleDetail?.module?.description || 'Sit, Stay, Come, and Heel basics.';
-  const steps = moduleDetail?.steps || mockSteps;
-  const finalChallenge = moduleDetail?.final_challenge || mockFinalChallenge;
+}: ChallengeDetailModalProps) {
+  if (!challenge) return null;
 
-  const completedCount = steps.filter(s => s.is_completed).length;
+  const steps = challenge.steps || [];
+  const completedSteps = progress?.completed_steps || [];
+  const completedCount = completedSteps.length;
   const totalCount = steps.length;
+  const isCompleted = progress?.status === 'completed';
+
+  const isStepCompleted = (stepId: string): boolean => {
+    return completedSteps.includes(stepId);
+  };
 
   return (
     <Modal
@@ -116,14 +73,27 @@ export function TrainingDetailModal({
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {/* Title */}
-            <Text className="text-white text-2xl font-bold mb-1">{title}</Text>
-            <Text className="text-[#94a3b8] text-base mb-6">{subtitle}</Text>
+            {/* Trophy icon */}
+            <View className="items-center mb-4">
+              <View className="w-16 h-16 rounded-full border-2 border-[#9c5cf6] items-center justify-center">
+                <Ionicons name="trophy-outline" size={32} color="#9c5cf6" />
+              </View>
+            </View>
 
-            {/* Training Steps Header */}
+            {/* Title */}
+            <Text className="text-white text-2xl font-bold mb-1 text-center">
+              {challenge.title}
+            </Text>
+            {challenge.description && (
+              <Text className="text-[#94a3b8] text-base mb-6 text-center">
+                {challenge.description}
+              </Text>
+            )}
+
+            {/* Progress Header */}
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-[#94a3b8] text-xs font-semibold tracking-wider">
-                TRAINING STEPS
+                CHALLENGE STEPS
               </Text>
               <Text className="text-[#94a3b8] text-sm">
                 {completedCount}/{totalCount} Completed
@@ -132,19 +102,20 @@ export function TrainingDetailModal({
 
             {/* Steps List */}
             {steps.map(step => {
-              const isCompleting = isCompletingStep && !step.is_completed;
+              const stepCompleted = isStepCompleted(step.id);
+              const isCompleting = isCompletingStep;
 
               return (
                 <Pressable
                   key={step.id}
                   className="bg-[#2a2a30] rounded-xl p-4 mb-3 flex-row items-start"
                   onPress={() =>
-                    !step.is_completed && !isCompleting && onStepPress?.(step)
+                    !stepCompleted && !isCompleting && onStepPress?.(step)
                   }
-                  disabled={step.is_completed || isCompleting}
+                  disabled={stepCompleted || isCompleting}
                 >
                   <View className="mr-3 mt-0.5">
-                    {step.is_completed ? (
+                    {stepCompleted ? (
                       <View className="w-6 h-6 rounded-full bg-[#10b981] items-center justify-center">
                         <Ionicons name="checkmark" size={16} color="white" />
                       </View>
@@ -152,14 +123,18 @@ export function TrainingDetailModal({
                       <View className="w-6 h-6 rounded-full border-2 border-[#94a3b8] items-center justify-center">
                         {isCompleting ? (
                           <ActivityIndicator size="small" color="#9c5cf6" />
-                        ) : null}
+                        ) : (
+                          <Text className="text-[#9c5cf6] text-xs font-medium">
+                            {step.order}
+                          </Text>
+                        )}
                       </View>
                     )}
                   </View>
                   <View className="flex-1">
                     <Text
                       className={`font-semibold text-base mb-1 ${
-                        step.is_completed ? 'text-[#4ade80]' : 'text-white'
+                        stepCompleted ? 'text-[#4ade80]' : 'text-white'
                       }`}
                     >
                       {step.title}
@@ -174,8 +149,8 @@ export function TrainingDetailModal({
               );
             })}
 
-            {/* Final Challenge Card */}
-            {finalChallenge && (
+            {/* Reward Card */}
+            {challenge.reward_title && (
               <LinearGradient
                 colors={['#78350f', '#92400e', '#b45309']}
                 start={{ x: 0, y: 0 }}
@@ -183,28 +158,27 @@ export function TrainingDetailModal({
                 className="rounded-xl p-4 mt-2 flex-row items-start"
               >
                 <View className="w-12 h-12 rounded-full bg-white/20 items-center justify-center mr-3">
-                  <Ionicons name="trophy" size={24} color="#fbbf24" />
+                  <Ionicons name="star" size={24} color="#fbbf24" />
                 </View>
                 <View className="flex-1">
                   <Text className="text-[#fbbf24] font-semibold text-base mb-1">
-                    {finalChallenge.title}
+                    Reward
                   </Text>
                   <Text className="text-white/80 text-sm mb-2">
-                    {finalChallenge.description}
+                    {challenge.reward_title}
                   </Text>
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                      <Ionicons name="star" size={14} color="#fbbf24" />
-                      <Text className="text-[#fbbf24] text-xs ml-1">
-                        Reward: {finalChallenge.reward_title}
+                  {challenge.reward_description && (
+                    <Text className="text-white/70 text-xs">
+                      {challenge.reward_description}
+                    </Text>
+                  )}
+                  {isCompleted && (
+                    <View className="bg-[#10b981] px-3 py-1 rounded-full self-start mt-2">
+                      <Text className="text-white text-xs font-semibold">
+                        Completed!
                       </Text>
                     </View>
-                    {finalChallenge.is_locked && (
-                      <View className="bg-[#57534e] px-3 py-1 rounded-full">
-                        <Text className="text-white text-xs">Locked</Text>
-                      </View>
-                    )}
-                  </View>
+                  )}
                 </View>
               </LinearGradient>
             )}

@@ -1,21 +1,25 @@
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-    ActivityIndicator,
-    RefreshControl,
-    ScrollView,
-    Text,
-    View,
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
 } from 'react-native';
 import { trainingService } from '../services/training.service';
 import {
-    ActivityDifficulty,
-    ModuleDetailResponse,
-    ModuleWithProgress,
-    PetSpecies,
-    UserLevel,
-    WeeklyChallenge,
+  ActivityDifficulty,
+  ChallengeStep,
+  ModuleDetailResponse,
+  ModuleWithProgress,
+  PetSpecies,
+  StepWithProgress,
+  UserChallengeProgress,
+  UserLevel,
+  WeeklyChallenge,
 } from '../types';
+import { ChallengeDetailModal } from './challenge-detail-modal';
 import { ChallengeModal } from './challenge-modal';
 import { TrainingDetailModal } from './training-detail-modal';
 import { TrainingHeader } from './training-header';
@@ -100,28 +104,43 @@ export function TrainingDashboard() {
   const [modules, setModules] = useState<ModuleWithProgress[]>([]);
   const [userLevel, setUserLevel] = useState<UserLevel | null>(null);
   const [challenge, setChallenge] = useState<WeeklyChallenge | null>(null);
+  const [challengeProgress, setChallengeProgress] =
+    useState<UserChallengeProgress | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   // Modal states
   const [showChallengeModal, setShowChallengeModal] = useState(false);
+  const [showChallengeDetailModal, setShowChallengeDetailModal] =
+    useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
-  const [selectedModuleDetail, setSelectedModuleDetail] = useState<ModuleDetailResponse | null>(null);
+  const [selectedModuleDetail, setSelectedModuleDetail] =
+    useState<ModuleDetailResponse | null>(null);
   const [acceptingChallenge, setAcceptingChallenge] = useState(false);
+  const [completingStep, setCompletingStep] = useState<string | null>(null);
+  const [completingChallengeStep, setCompletingChallengeStep] = useState<
+    string | null
+  >(null);
 
   const fetchData = useCallback(async () => {
     try {
       // Try to fetch from API, fall back to mock data
-      const [modulesData, profileData, challengeData] = await Promise.allSettled([
-        trainingService.getModulesWithProgress(),
-        trainingService.getUserProfile(),
-        trainingService.getActiveChallenge(),
-      ]);
+      const [modulesData, profileData, challengeData] =
+        await Promise.allSettled([
+          trainingService.getModulesWithProgress(),
+          trainingService.getUserProfile(),
+          trainingService.getActiveChallenge(),
+        ]);
 
-      if (modulesData.status === 'fulfilled' && modulesData.value.length > 0) {
+      // Handle modules data - treat empty array as valid response
+      if (modulesData.status === 'fulfilled') {
         setModules(modulesData.value);
       } else {
-        // Use mock data
+        // Only use mock data if API call failed
+        console.warn(
+          'Failed to fetch modules, using mock data:',
+          modulesData.reason
+        );
         setModules(mockModules);
       }
 
@@ -129,12 +148,29 @@ export function TrainingDashboard() {
         setUserLevel(profileData.value.level);
       }
 
+      // Handle challenge data - null is a valid response (no active challenge)
       if (challengeData.status === 'fulfilled') {
-        setChallenge(challengeData.value);
+        const activeChallenge = challengeData.value;
+        setChallenge(activeChallenge);
+
+        // Fetch challenge progress if challenge exists
+        if (activeChallenge) {
+          try {
+            const progress = await trainingService.getChallengeProgress(
+              activeChallenge.id
+            );
+            setChallengeProgress(progress);
+          } catch {
+            // No progress means challenge not accepted yet
+            setChallengeProgress(null);
+          }
+        } else {
+          setChallengeProgress(null);
+        }
       }
     } catch (error) {
       console.error('Failed to fetch training data:', error);
-      // Fall back to mock data
+      // Fall back to mock data only on unexpected errors
       setModules(mockModules);
     } finally {
       setLoading(false);
@@ -155,6 +191,15 @@ export function TrainingDashboard() {
 
   const handleModulePress = async (module: ModuleWithProgress) => {
     try {
+      // Start module if not started yet
+      if (!module.user_progress) {
+        try {
+          await trainingService.startModule(module.id);
+        } catch (error) {
+          console.error('Failed to start module:', error);
+        }
+      }
+
       const detail = await trainingService.getModuleById(module.id);
       setSelectedModuleDetail(detail);
     } catch {
@@ -169,13 +214,44 @@ export function TrainingDashboard() {
     setShowDetailModal(true);
   };
 
+  const handleStepPress = useCallback(
+    async (step: StepWithProgress) => {
+      if (!selectedModuleDetail) return;
+
+      // Don't allow completing already completed steps
+      if (step.is_completed) {
+        return;
+      }
+
+      const moduleId = selectedModuleDetail.module.id;
+      const stepId = step.id;
+
+      setCompletingStep(stepId);
+      try {
+        await trainingService.completeStep(moduleId, stepId);
+        // Refresh module detail to get updated progress
+        const updatedDetail = await trainingService.getModuleById(moduleId);
+        setSelectedModuleDetail(updatedDetail);
+        // Refresh all data to update progress in the list
+        await fetchData();
+      } catch (error) {
+        console.error('Failed to complete step:', error);
+      } finally {
+        setCompletingStep(null);
+      }
+    },
+    [selectedModuleDetail, fetchData]
+  );
+
   const handleAcceptChallenge = async () => {
     if (!challenge) return;
     setAcceptingChallenge(true);
     try {
-      await trainingService.acceptChallenge(challenge.id);
+      const progress = await trainingService.acceptChallenge(challenge.id);
+      setChallengeProgress(progress);
       setShowChallengeModal(false);
-      fetchData();
+      setShowChallengeDetailModal(true);
+      await fetchData();
     } catch (error) {
       console.error('Failed to accept challenge:', error);
     } finally {
@@ -183,12 +259,45 @@ export function TrainingDashboard() {
     }
   };
 
+  const handleChallengeStepPress = useCallback(
+    async (step: ChallengeStep) => {
+      if (!challenge || !challengeProgress) return;
+
+      // Don't allow completing already completed steps
+      if (challengeProgress.completed_steps.includes(step.id)) {
+        return;
+      }
+
+      const challengeId = challenge.id;
+      const stepId = step.id;
+
+      setCompletingChallengeStep(stepId);
+      try {
+        await trainingService.completeChallengeStep(challengeId, stepId);
+        // Refresh challenge progress
+        const updatedProgress =
+          await trainingService.getChallengeProgress(challengeId);
+        setChallengeProgress(updatedProgress);
+        // Refresh all data to update progress
+        await fetchData();
+      } catch (error) {
+        console.error('Failed to complete challenge step:', error);
+      } finally {
+        setCompletingChallengeStep(null);
+      }
+    },
+    [challenge, challengeProgress, fetchData]
+  );
+
   // Split modules into in-progress and upcoming
   const inProgressModules = modules.filter(
-    (m) => m.user_progress && m.user_progress.progress_percentage > 0 && m.user_progress.progress_percentage < 100
+    m =>
+      m.user_progress &&
+      m.user_progress.progress_percentage > 0 &&
+      m.user_progress.progress_percentage < 100
   );
   const upcomingModules = modules.filter(
-    (m) => !m.user_progress || m.user_progress.progress_percentage === 0
+    m => !m.user_progress || m.user_progress.progress_percentage === 0
   );
 
   if (loading) {
@@ -217,14 +326,23 @@ export function TrainingDashboard() {
 
         <WeeklyChallengeBanner
           challenge={challenge}
-          onStartChallenge={() => setShowChallengeModal(true)}
+          challengeProgress={challengeProgress}
+          onStartChallenge={() => {
+            if (challengeProgress) {
+              setShowChallengeDetailModal(true);
+            } else {
+              setShowChallengeModal(true);
+            }
+          }}
         />
 
         {/* In Progress Section */}
         {inProgressModules.length > 0 && (
           <View className="mb-6">
-            <Text className="text-white font-semibold text-lg mb-4">In Progress</Text>
-            {inProgressModules.map((module) => (
+            <Text className="text-white font-semibold text-lg mb-4">
+              In Progress
+            </Text>
+            {inProgressModules.map(module => (
               <TrainingModuleCard
                 key={module.id}
                 module={module}
@@ -237,8 +355,10 @@ export function TrainingDashboard() {
         {/* Upcoming Modules Section */}
         {upcomingModules.length > 0 && (
           <View className="mb-6">
-            <Text className="text-white font-semibold text-lg mb-4">Upcoming Modules</Text>
-            {upcomingModules.map((module) => (
+            <Text className="text-white font-semibold text-lg mb-4">
+              Upcoming Modules
+            </Text>
+            {upcomingModules.map(module => (
               <TrainingModuleCard
                 key={module.id}
                 module={module}
@@ -270,6 +390,15 @@ export function TrainingDashboard() {
         isAccepting={acceptingChallenge}
       />
 
+      <ChallengeDetailModal
+        visible={showChallengeDetailModal}
+        challenge={challenge}
+        progress={challengeProgress}
+        onClose={() => setShowChallengeDetailModal(false)}
+        onStepPress={handleChallengeStepPress}
+        isCompletingStep={completingChallengeStep !== null}
+      />
+
       <TrainingDetailModal
         visible={showDetailModal}
         moduleDetail={selectedModuleDetail}
@@ -277,6 +406,8 @@ export function TrainingDashboard() {
           setShowDetailModal(false);
           setSelectedModuleDetail(null);
         }}
+        onStepPress={handleStepPress}
+        isCompletingStep={completingStep !== null}
       />
     </View>
   );
