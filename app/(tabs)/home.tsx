@@ -1,19 +1,22 @@
+import { useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
 import { AiHealthInsightWidget } from '@/components/home/ai-health-insight-widget';
 import { DiscordWidget } from '@/components/home/discord-widget';
 import { FaqWidget } from '@/components/home/faq-widget';
-import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
-import MaskedView from '@react-native-masked-view/masked-view';
 import { QuickActionsGrid } from '@/components/home/quick-actions-grid';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { TrainingProgressWidget } from '@/components/home/training-progress-widget';
 import { WeightHistoryWidget } from '@/components/home/weight-history-widget';
+import { SidebarMenu } from '@/components/sidebar-menu';
 import { useAuth } from '@/hooks/use-auth';
+import { Ionicons } from '@expo/vector-icons';
+import MaskedView from '@react-native-masked-view/masked-view';
+import { LinearGradient } from 'expo-linear-gradient';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  const [sidebarVisible, setSidebarVisible] = useState(false);
 
   return (
     <SafeAreaView className="flex-1 bg-[#17171c]">
@@ -24,23 +27,31 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View className="flex-row items-center justify-between mb-6">
-          <View>
-            <Text className="text-gray-400 text-sm mb-1">Welcome back,</Text>
-            <MaskedView
-              maskElement={
-                <Text className="text-2xl font-bold">{user?.firstName}</Text>
-              }
+          <View className="flex-row items-center gap-3 flex-1">
+            <TouchableOpacity
+              onPress={() => setSidebarVisible(true)}
+              className="items-center justify-center"
             >
-              <LinearGradient
-                colors={['#a855f7', '#ec4899']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
+              <Ionicons name="menu" size={24} color="#fff" />
+            </TouchableOpacity>
+            <View>
+              <Text className="text-gray-400 text-sm mb-1">Welcome back,</Text>
+              <MaskedView
+                maskElement={
+                  <Text className="text-2xl font-bold">{user?.firstName}</Text>
+                }
               >
-                <Text className="text-2xl font-bold opacity-0">
-                  {user?.firstName}
-                </Text>
-              </LinearGradient>
-            </MaskedView>
+                <LinearGradient
+                  colors={['#a855f7', '#ec4899']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                >
+                  <Text className="text-2xl font-bold opacity-0">
+                    {user?.firstName}
+                  </Text>
+                </LinearGradient>
+              </MaskedView>
+            </View>
           </View>
 
           <TouchableOpacity className="w-10 h-10 rounded-full bg-[#2a2a30] items-center justify-center">
@@ -68,6 +79,12 @@ export default function HomeScreen() {
         {/* FAQ Widget */}
         <FaqWidget />
       </ScrollView>
+
+      {/* Sidebar Menu */}
+      <SidebarMenu
+        visible={sidebarVisible}
+        onClose={() => setSidebarVisible(false)}
+      />
     </SafeAreaView>
   );
 }
